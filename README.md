@@ -1,6 +1,6 @@
 # gb2av-web-service
 
-## Betriebsdokumentation
+## Betriebsdokumentation
 
 ### Konfiguration
 

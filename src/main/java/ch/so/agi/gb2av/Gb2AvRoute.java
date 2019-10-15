@@ -52,16 +52,19 @@ public class Gb2AvRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         
-        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelay+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#fileConsumerRepo&idempotentKey=gb2av-ftp-${file:name}-${file:size}-${file:modified}")
-        .to("file://"+pathToDownloadFolder)
-        .split(new ZipSplitter())
-        .streaming().convertBodyTo(ByteBuffer.class)
-            .choice()
-                .when(body().isNotNull())
-                    .to("file://"+pathToUnzipFolder) 
-            .end()
-        .end();        
+//        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelay+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#fileConsumerRepo&idempotentKey=gb2av-ftp-${file:name}-${file:size}-${file:modified}")
+//        .to("file://"+pathToDownloadFolder)
+//        .split(new ZipSplitter())
+//        .streaming().convertBodyTo(ByteBuffer.class)
+//            .choice()
+//                .when(body().isNotNull())
+//                    .to("file://"+pathToUnzipFolder) 
+//            .end()
+//        .end();        
 
+        // TODO: get db credentials from datasource
+        
+        
     }
 
 }
