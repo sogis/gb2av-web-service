@@ -4,9 +4,15 @@ plugins {
 	id 'java'
 }
 
+apply from: "$rootDir/gradle/versioning.gradle"
+
 group = 'ch.so.agi'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+ext {
+    apacheCamelVersion = "2.23.1"
+}
 
 configurations {
 	developmentOnly
@@ -22,7 +28,10 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.apache.camel:camel-spring-boot-starter:2.24.0'
+    implementation "org.apache.camel:camel-ftp:${apacheCamelVersion}"	
+	implementation 'org.apache.camel:camel-spring-boot-starter:${apacheCamelVersion}'
+    implementation "org.apache.camel:camel-zipfile:${apacheCamelVersion}"
+    implementation "org.apache.camel:camel-aws:${apacheCamelVersion}"
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
