@@ -2,10 +2,13 @@ package ch.so.agi.gb2av;
 
 import java.nio.ByteBuffer;
 
+import javax.sql.DataSource;
+
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.zipfile.ZipSplitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -49,6 +52,9 @@ public class Gb2AvRoute extends RouteBuilder {
     @Value("${app.initialUploadDelay}")
     private String initialUploadDelay;
 
+    @Autowired
+    DataSource dataSource;
+
     @Override
     public void configure() throws Exception {
         
@@ -63,7 +69,6 @@ public class Gb2AvRoute extends RouteBuilder {
 //        .end();        
 
         // TODO: get db credentials from datasource
-        
         
     }
 
