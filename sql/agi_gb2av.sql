@@ -3,11 +3,15 @@ CREATE SEQUENCE agi_gb2av.t_ili2db_seq;;
 -- GB2AV.Flurname
 CREATE TABLE agi_gb2av.flurname (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Seq bigint NULL
   ,aname varchar(40) NOT NULL
   ,grundstcsbsb_grndsteck_flurnamen bigint NULL
 )
 ;
+CREATE INDEX flurname_t_basket_idx ON agi_gb2av.flurname ( t_basket );
+CREATE INDEX flurname_t_datasetname_idx ON agi_gb2av.flurname ( t_datasetname );
 CREATE INDEX flurname_grundstcsbsb_dstck_flrnmen_idx ON agi_gb2av.flurname ( grundstcsbsb_grndsteck_flurnamen );
 COMMENT ON TABLE agi_gb2av.flurname IS 'Angaben zur Flur.';
 COMMENT ON COLUMN agi_gb2av.flurname.aname IS 'Name der Flur.
@@ -17,16 +21,22 @@ DM01: muss berechnet werden, durch Schnitt mit Nomenklatur.Flurname';
 -- GB2AV.Gemeinde
 CREATE TABLE agi_gb2av.gemeinde (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Seq bigint NULL
   ,aname varchar(30) NOT NULL
   ,bfsnr integer NOT NULL
   ,grundstcsbsb_grndsteck_gemeinde bigint NULL
 )
 ;
+CREATE INDEX gemeinde_t_basket_idx ON agi_gb2av.gemeinde ( t_basket );
+CREATE INDEX gemeinde_t_datasetname_idx ON agi_gb2av.gemeinde ( t_datasetname );
 CREATE INDEX gemeinde_grundstcsbsb_rndstck_gmnde_idx ON agi_gb2av.gemeinde ( grundstcsbsb_grndsteck_gemeinde );
 -- GB2AV.GrundstueckNummer
 CREATE TABLE agi_gb2av.grundstuecknummer (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Seq bigint NULL
   ,egrid varchar(14) NULL
   ,nummer varchar(12) NOT NULL
@@ -40,6 +50,8 @@ CREATE TABLE agi_gb2av.grundstuecknummer (
   ,mutationstabll_vmttion_geloeschtegrundstuecke bigint NULL
 )
 ;
+CREATE INDEX grundstuecknummer_t_basket_idx ON agi_gb2av.grundstuecknummer ( t_basket );
+CREATE INDEX grundstuecknummer_t_datasetname_idx ON agi_gb2av.grundstuecknummer ( t_datasetname );
 CREATE INDEX grundstuecknummer_eigntmsvrhls_rndstck_nmmer_idx ON agi_gb2av.grundstuecknummer ( eigntmsvrhls_grndsteck_nummer );
 CREATE INDEX grundstuecknummer_grundstcsbsb_rndstck_nmmer_idx ON agi_gb2av.grundstuecknummer ( grundstcsbsb_grndsteck_nummer );
 CREATE INDEX grundstuecknummer_mutationstbll_bschnitt_von_idx ON agi_gb2av.grundstuecknummer ( mutationstbll_bschnitt_von );
@@ -62,12 +74,16 @@ COMMENT ON COLUMN agi_gb2av.grundstuecknummer.mutationstbll_bschnitt_von IS 'Lie
 -- GB2AV.GBPlan
 CREATE TABLE agi_gb2av.gbplan (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Seq bigint NULL
   ,nummer varchar(12) NOT NULL
   ,nbident varchar(12) NOT NULL
   ,grundstcsbsb_grndsteck_gbplaene bigint NULL
 )
 ;
+CREATE INDEX gbplan_t_basket_idx ON agi_gb2av.gbplan ( t_basket );
+CREATE INDEX gbplan_t_datasetname_idx ON agi_gb2av.gbplan ( t_datasetname );
 CREATE INDEX gbplan_grundstcsbsb_dstck_gbplene_idx ON agi_gb2av.gbplan ( grundstcsbsb_grndsteck_gbplaene );
 COMMENT ON TABLE agi_gb2av.gbplan IS 'Angaben zum Grundbuchplan';
 COMMENT ON COLUMN agi_gb2av.gbplan.nummer IS 'Die Nummer des Grundbuchplans.
@@ -79,6 +95,8 @@ DM01: muss berechnet werden, durch Schnitt mit dem Thema Planeinteilung.';
 -- GB2AV.GebaeudeeingangAdresse
 CREATE TABLE agi_gb2av.gebaeudeeingangadresse (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Seq bigint NULL
   ,strasse varchar(60) NULL
   ,hausnummer varchar(12) NULL
@@ -92,6 +110,8 @@ CREATE TABLE agi_gb2av.gebaeudeeingangadresse (
   ,grundstcsbschrib_gbude_adresse bigint NULL
 )
 ;
+CREATE INDEX gebaeudeeingangadresse_t_basket_idx ON agi_gb2av.gebaeudeeingangadresse ( t_basket );
+CREATE INDEX gebaeudeeingangadresse_t_datasetname_idx ON agi_gb2av.gebaeudeeingangadresse ( t_datasetname );
 CREATE INDEX gebaeudeeingangadresse_grundstcsbschrib_gbd_drsse_idx ON agi_gb2av.gebaeudeeingangadresse ( grundstcsbschrib_gbude_adresse );
 COMMENT ON TABLE agi_gb2av.gebaeudeeingangadresse IS 'gem. SN 612040 bzw. GWR.';
 COMMENT ON COLUMN agi_gb2av.gebaeudeeingangadresse.strasse IS 'Der Strassenname, z.B. Blümlisalpstrasse.
@@ -117,6 +137,8 @@ DM01: Gebaeudeadressen.Gebaeudeeingang->GWR_EDID';
 -- GB2AV.MutationsNummer
 CREATE TABLE agi_gb2av.mutationsnummer (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Seq bigint NULL
   ,nummer varchar(12) NOT NULL
   ,nbident varchar(12) NOT NULL
@@ -126,6 +148,8 @@ CREATE TABLE agi_gb2av.mutationsnummer (
   ,muttnstbll_ttnsnnltion_mutationsnummer bigint NULL
 )
 ;
+CREATE INDEX mutationsnummer_t_basket_idx ON agi_gb2av.mutationsnummer ( t_basket );
+CREATE INDEX mutationsnummer_t_datasetname_idx ON agi_gb2av.mutationsnummer ( t_datasetname );
 CREATE INDEX mutationsnummer_grundstcsbsb_tvllzgnmttion_idx ON agi_gb2av.mutationsnummer ( grundstcsbsb_grndsteck_letztevollzogenemutation );
 CREATE INDEX mutationsnummer_vollzgsggnszgnd_mttnsnmmer_idx ON agi_gb2av.mutationsnummer ( vollzgsggnszgsggnstand_mutationsnummer );
 CREATE INDEX mutationsnummer_muttnstbll_vmtn_mttnsnmmer_idx ON agi_gb2av.mutationsnummer ( mutationstabll_vmttion_mutationsnummer );
@@ -143,14 +167,20 @@ COMMENT ON COLUMN agi_gb2av.mutationsnummer.muttnstbll_ttnsnnltion_mutationsnumm
 -- GB2AV.Eigentumsverhaeltnis.Grundstueck
 CREATE TABLE agi_gb2av.eigentumsvrhltnis_grundstueck (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,art varchar(255) NULL
 )
 ;
+CREATE INDEX eigentumsvrhltns_grndsteck_t_basket_idx ON agi_gb2av.eigentumsvrhltnis_grundstueck ( t_basket );
+CREATE INDEX eigentumsvrhltns_grndsteck_t_datasetname_idx ON agi_gb2av.eigentumsvrhltnis_grundstueck ( t_datasetname );
 COMMENT ON TABLE agi_gb2av.eigentumsvrhltnis_grundstueck IS 'Angaben zu einem Grundstück.';
 COMMENT ON COLUMN agi_gb2av.eigentumsvrhltnis_grundstueck.art IS 'Die Art des Grundstücks, z.B. Liegenschaft.';
 -- GB2AV.Eigentumsverhaeltnis.Person
 CREATE TABLE agi_gb2av.eigentumsvrhltnis_person (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,art varchar(255) NULL
   ,aname varchar(200) NOT NULL
   ,vorname varchar(30) NULL
@@ -172,6 +202,8 @@ CREATE TABLE agi_gb2av.eigentumsvrhltnis_person (
   ,auid varchar(20) NULL
 )
 ;
+CREATE INDEX eigentumsvrhltnis_person_t_basket_idx ON agi_gb2av.eigentumsvrhltnis_person ( t_basket );
+CREATE INDEX eigentumsvrhltnis_person_t_datasetname_idx ON agi_gb2av.eigentumsvrhltnis_person ( t_datasetname );
 COMMENT ON TABLE agi_gb2av.eigentumsvrhltnis_person IS 'Angaben zu einer Person.';
 COMMENT ON COLUMN agi_gb2av.eigentumsvrhltnis_person.art IS 'Die Art der Person, z.B. natürliche Person oder AG.';
 COMMENT ON COLUMN agi_gb2av.eigentumsvrhltnis_person.aname IS 'Name der Person oder Firma, z.B. "Meier" oder "Kiosk AG".';
@@ -195,6 +227,8 @@ COMMENT ON COLUMN agi_gb2av.eigentumsvrhltnis_person.auid IS 'Eidg. Unternehmens
 -- GB2AV.Eigentumsverhaeltnis.RechtGrundstueck
 CREATE TABLE agi_gb2av.eigentumsvrhltnis_rechtgrundstueck (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,subjektivdinglich boolean NOT NULL
   ,berechtigtesgrundstueck bigint NOT NULL
   ,anteilzaehler integer NULL
@@ -203,6 +237,8 @@ CREATE TABLE agi_gb2av.eigentumsvrhltnis_rechtgrundstueck (
   ,betroffenesgrundstueck bigint NULL
 )
 ;
+CREATE INDEX eigntmsvrhltnrchtgrndsteck_t_basket_idx ON agi_gb2av.eigentumsvrhltnis_rechtgrundstueck ( t_basket );
+CREATE INDEX eigntmsvrhltnrchtgrndsteck_t_datasetname_idx ON agi_gb2av.eigentumsvrhltnis_rechtgrundstueck ( t_datasetname );
 CREATE INDEX eigntmsvrhltnrchtgrndsteck_berechtigtesgrundstueck_idx ON agi_gb2av.eigentumsvrhltnis_rechtgrundstueck ( berechtigtesgrundstueck );
 CREATE INDEX eigntmsvrhltnrchtgrndsteck_betroffenesgrundstueck_idx ON agi_gb2av.eigentumsvrhltnis_rechtgrundstueck ( betroffenesgrundstueck );
 COMMENT ON TABLE agi_gb2av.eigentumsvrhltnis_rechtgrundstueck IS 'Stellt die Veknüpfung vom Grundstück zu einem anderen Grundstück her, falls es sich um ein Grundstück handelt, das am Grundstück berechtigt ist.';
@@ -215,6 +251,8 @@ COMMENT ON COLUMN agi_gb2av.eigentumsvrhltnis_rechtgrundstueck.betroffenesgrunds
 -- GB2AV.Eigentumsverhaeltnis.RechtPerson
 CREATE TABLE agi_gb2av.eigentumsvrhltnis_rechtperson (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,art varchar(255) NULL
   ,berechtigter bigint NULL
   ,anteilzaehler integer NULL
@@ -223,6 +261,8 @@ CREATE TABLE agi_gb2av.eigentumsvrhltnis_rechtperson (
   ,betroffenesgrundstueck bigint NULL
 )
 ;
+CREATE INDEX eigentumsvrhltns_rchtprson_t_basket_idx ON agi_gb2av.eigentumsvrhltnis_rechtperson ( t_basket );
+CREATE INDEX eigentumsvrhltns_rchtprson_t_datasetname_idx ON agi_gb2av.eigentumsvrhltnis_rechtperson ( t_datasetname );
 CREATE INDEX eigentumsvrhltns_rchtprson_berechtigter_idx ON agi_gb2av.eigentumsvrhltnis_rechtperson ( berechtigter );
 CREATE INDEX eigentumsvrhltns_rchtprson_betroffenesgrundstueck_idx ON agi_gb2av.eigentumsvrhltnis_rechtperson ( betroffenesgrundstueck );
 COMMENT ON TABLE agi_gb2av.eigentumsvrhltnis_rechtperson IS 'Stellt die Verknüpfung vom Grundstück zur Person her, falls es sich um eine Person handelt, die am Grundstück berechtigt ist.';
@@ -235,10 +275,14 @@ COMMENT ON COLUMN agi_gb2av.eigentumsvrhltnis_rechtperson.betroffenesgrundstueck
 -- GB2AV.Eigentumsverhaeltnis.GemeinschaftTeilhaber
 CREATE TABLE agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,gemeinschaft bigint NOT NULL
   ,teilhaber bigint NOT NULL
 )
 ;
+CREATE INDEX eigntmsvrhltnmnschfttlhber_t_basket_idx ON agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber ( t_basket );
+CREATE INDEX eigntmsvrhltnmnschfttlhber_t_datasetname_idx ON agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber ( t_datasetname );
 CREATE INDEX eigntmsvrhltnmnschfttlhber_gemeinschaft_idx ON agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber ( gemeinschaft );
 CREATE INDEX eigntmsvrhltnmnschfttlhber_teilhaber_idx ON agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber ( teilhaber );
 COMMENT ON COLUMN agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber.gemeinschaft IS 'Die Gemeinschaft, z.B. die Erbengemeinschaft, in der diese Person Teilhaber ist.';
@@ -246,16 +290,22 @@ COMMENT ON COLUMN agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber.teilhaber IS
 -- GB2AV.Grundstuecksbeschrieb.AVBemerkung
 CREATE TABLE agi_gb2av.grundstcsbschrieb_avbemerkung (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Type varchar(60) NOT NULL
   ,art varchar(255) NOT NULL
   ,andereart varchar(20) NULL
   ,bemerkung varchar(200) NULL
 )
 ;
+CREATE INDEX grundstcsbschrieb_vbmrkung_t_basket_idx ON agi_gb2av.grundstcsbschrieb_avbemerkung ( t_basket );
+CREATE INDEX grundstcsbschrieb_vbmrkung_t_datasetname_idx ON agi_gb2av.grundstcsbschrieb_avbemerkung ( t_datasetname );
 COMMENT ON COLUMN agi_gb2av.grundstcsbschrieb_avbemerkung.andereart IS 'falls Art==#andere';
 -- GB2AV.Grundstuecksbeschrieb.BodbdAnteil
 CREATE TABLE agi_gb2av.grundstcsbschrieb_bodbdanteil (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Seq bigint NULL
   ,art varchar(255) NOT NULL
   ,flaechenmass decimal(11,1) NOT NULL
@@ -263,6 +313,8 @@ CREATE TABLE agi_gb2av.grundstcsbschrieb_bodbdanteil (
   ,grundstcsbsb_grndsteck_bodbdanteil bigint NULL
 )
 ;
+CREATE INDEX grundstcsbschrib_bdbdnteil_t_basket_idx ON agi_gb2av.grundstcsbschrieb_bodbdanteil ( t_basket );
+CREATE INDEX grundstcsbschrib_bdbdnteil_t_datasetname_idx ON agi_gb2av.grundstcsbschrieb_bodbdanteil ( t_datasetname );
 CREATE INDEX grundstcsbschrib_bdbdnteil_grundstcsbsb_tck_bdbdnteil_idx ON agi_gb2av.grundstcsbschrieb_bodbdanteil ( grundstcsbsb_grndsteck_bodbdanteil );
 COMMENT ON TABLE agi_gb2av.grundstcsbschrieb_bodbdanteil IS 'Angaben zur Bodenbedeckung.';
 COMMENT ON COLUMN agi_gb2av.grundstcsbschrieb_bodbdanteil.art IS 'Die Art der Bodenbedeckung, z.B. Schilfgürtel.
@@ -275,6 +327,8 @@ DM01: muss berechnet werden, durch Schnitt mit Thema Bodenbedeckung';
 -- GB2AV.Grundstuecksbeschrieb.Gebaeude
 CREATE TABLE agi_gb2av.grundstcsbschrieb_gebaeude (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,gwr_egid integer NULL
   ,istprojektiert boolean NOT NULL
   ,istunterirdisch boolean NOT NULL
@@ -284,6 +338,8 @@ CREATE TABLE agi_gb2av.grundstcsbschrieb_gebaeude (
   ,flaechenmass decimal(11,1) NOT NULL
 )
 ;
+CREATE INDEX grundstcsbschrieb_gebaeude_t_basket_idx ON agi_gb2av.grundstcsbschrieb_gebaeude ( t_basket );
+CREATE INDEX grundstcsbschrieb_gebaeude_t_datasetname_idx ON agi_gb2av.grundstcsbschrieb_gebaeude ( t_datasetname );
 COMMENT ON COLUMN agi_gb2av.grundstcsbschrieb_gebaeude.gwr_egid IS 'Kein Wert vorhanden (Leer/NULL), falls kein GWR_EGID in der AV vorhanden ist, oder falls der Gebäudegrundriss (Bodenbedeckungs-/Einzelobjektfläche) in der AV mehrere GWR Gebäude representiert.';
 COMMENT ON COLUMN agi_gb2av.grundstcsbschrieb_gebaeude.gebaeudeart IS 'DM01OS: Gebaeudenummer->Gebaeudehauptnutzung';
 COMMENT ON COLUMN agi_gb2av.grundstcsbschrieb_gebaeude.gebaeudeartcode IS 'DM01OS: Gebaeudenummer->Nutzungscode
@@ -291,6 +347,8 @@ DM01FR: Code_Csol_FR';
 -- GB2AV.Grundstuecksbeschrieb.Grundstueck
 CREATE TABLE agi_gb2av.grundstcsbschrieb_grundstueck (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Type varchar(60) NOT NULL
   ,flaechenmass decimal(11,1) NULL
   ,grundstueckart varchar(255) NULL
@@ -301,6 +359,8 @@ CREATE TABLE agi_gb2av.grundstcsbschrieb_grundstueck (
   ,korrigiertesflaechenmass1 decimal(11,1) NULL
 )
 ;
+CREATE INDEX grundstcsbschrib_grndsteck_t_basket_idx ON agi_gb2av.grundstcsbschrieb_grundstueck ( t_basket );
+CREATE INDEX grundstcsbschrib_grndsteck_t_datasetname_idx ON agi_gb2av.grundstcsbschrieb_grundstueck ( t_datasetname );
 COMMENT ON COLUMN agi_gb2av.grundstcsbschrieb_grundstueck.flaechenmass IS 'Die Grösse dieses Grundstücks.';
 COMMENT ON COLUMN agi_gb2av.grundstcsbschrieb_grundstueck.korrektur IS 'leer wenn keine Flächekorrektur erfolgt.';
 COMMENT ON COLUMN agi_gb2av.grundstcsbschrieb_grundstueck.korrigiertesflaechenmass IS 'leer wenn keine Flächenkorrektur erfolgt. (bisherige Fläche+Koorektur==korrigiertesFlaechenmass)';
@@ -309,36 +369,50 @@ COMMENT ON COLUMN agi_gb2av.grundstcsbschrieb_grundstueck.korrigiertesflaechenma
 -- GB2AV.Grundstuecksbeschrieb.AVBemerkungGrundstueck
 CREATE TABLE agi_gb2av.grundstcsbschrieb_avbemerkunggrundstueck (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,avbemerkung bigint NOT NULL
   ,grundstueck bigint NOT NULL
 )
 ;
+CREATE INDEX grundstcsbschrknggrndsteck_t_basket_idx ON agi_gb2av.grundstcsbschrieb_avbemerkunggrundstueck ( t_basket );
+CREATE INDEX grundstcsbschrknggrndsteck_t_datasetname_idx ON agi_gb2av.grundstcsbschrieb_avbemerkunggrundstueck ( t_datasetname );
 CREATE INDEX grundstcsbschrknggrndsteck_avbemerkung_idx ON agi_gb2av.grundstcsbschrieb_avbemerkunggrundstueck ( avbemerkung );
 CREATE INDEX grundstcsbschrknggrndsteck_grundstueck_idx ON agi_gb2av.grundstcsbschrieb_avbemerkunggrundstueck ( grundstueck );
 -- GB2AV.Grundstuecksbeschrieb.GrundstueckGebaeude
 CREATE TABLE agi_gb2av.grundstcsbschrieb_grundstueckgebaeude (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,gebaeude bigint NOT NULL
   ,grundstueck bigint NOT NULL
   ,flaechenmass decimal(11,1) NOT NULL
 )
 ;
+CREATE INDEX grundstcsbschgrndstckgbude_t_basket_idx ON agi_gb2av.grundstcsbschrieb_grundstueckgebaeude ( t_basket );
+CREATE INDEX grundstcsbschgrndstckgbude_t_datasetname_idx ON agi_gb2av.grundstcsbschrieb_grundstueckgebaeude ( t_datasetname );
 CREATE INDEX grundstcsbschgrndstckgbude_gebaeude_idx ON agi_gb2av.grundstcsbschrieb_grundstueckgebaeude ( gebaeude );
 CREATE INDEX grundstcsbschgrndstckgbude_grundstueck_idx ON agi_gb2av.grundstcsbschrieb_grundstueckgebaeude ( grundstueck );
 COMMENT ON TABLE agi_gb2av.grundstcsbschrieb_grundstueckgebaeude IS 'Gebaeude zu allen überdeckten Liegenschaften und falls vorhanden Baurechten liefern. Der Grundbuchverwalter entscheidet selbst, bei welchem Grundstücksbeschrieb das Gebaeude eingetragen wird.';
 -- GB2AV.Grundstuecksbeschrieb.Anteil
 CREATE TABLE agi_gb2av.grundstcsbschrieb_anteil (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,flaeche bigint NOT NULL
   ,liegt_auf bigint NOT NULL
   ,flaechenmass decimal(11,1) NULL
 )
 ;
+CREATE INDEX grundstcsbschrieb_anteil_t_basket_idx ON agi_gb2av.grundstcsbschrieb_anteil ( t_basket );
+CREATE INDEX grundstcsbschrieb_anteil_t_datasetname_idx ON agi_gb2av.grundstcsbschrieb_anteil ( t_datasetname );
 CREATE INDEX grundstcsbschrieb_anteil_flaeche_idx ON agi_gb2av.grundstcsbschrieb_anteil ( flaeche );
 CREATE INDEX grundstcsbschrieb_anteil_liegt_auf_idx ON agi_gb2av.grundstcsbschrieb_anteil ( liegt_auf );
 -- GB2AV.Vollzugsgegenstaende.Vollzugsgegenstand
 CREATE TABLE agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,astatus varchar(255) NOT NULL
   ,bemerkungen varchar(200) NULL
   ,grundbucheintrag varchar(10) NULL
@@ -346,6 +420,8 @@ CREATE TABLE agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand (
   ,tagebuchbeleg varchar(20) NULL
 )
 ;
+CREATE INDEX vollzgsggnstnllzgsggnstand_t_basket_idx ON agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand ( t_basket );
+CREATE INDEX vollzgsggnstnllzgsggnstand_t_datasetname_idx ON agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand ( t_datasetname );
 COMMENT ON TABLE agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand IS 'Angaben zum Vollzug einer Mutation im Grundbuch.';
 COMMENT ON COLUMN agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand.astatus IS 'Aktueller Status der Mutation im Grundbuch, z.B. Eintrag.';
 COMMENT ON COLUMN agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand.bemerkungen IS 'z.B. der Grund für die Abweisung';
@@ -356,21 +432,29 @@ COMMENT ON COLUMN agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand.tagebuchbeleg I
 CREATE TABLE agi_gb2av.mutationstabelle_abschnitt (
   grundstcsbsb_grndsteck_zugang bigint NULL
   ,T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,T_Seq bigint NULL
   ,flaechenmass decimal(11,1) NOT NULL
 )
 ;
 CREATE INDEX mutationstabelle_abschnitt_grundstcsbsb_rndstck_zgang_idx ON agi_gb2av.mutationstabelle_abschnitt ( grundstcsbsb_grndsteck_zugang );
+CREATE INDEX mutationstabelle_abschnitt_t_basket_idx ON agi_gb2av.mutationstabelle_abschnitt ( t_basket );
+CREATE INDEX mutationstabelle_abschnitt_t_datasetname_idx ON agi_gb2av.mutationstabelle_abschnitt ( t_datasetname );
 COMMENT ON COLUMN agi_gb2av.mutationstabelle_abschnitt.grundstcsbsb_grndsteck_zugang IS 'Abschnittsfläche die der Liegenschaft hinzugefügt wird. Je nach Art der Mutation, werden keine Abschnittsflächen ausgewiesen (z.B. Neuvermessung).';
 -- GB2AV.Mutationstabelle.AVMutation
 CREATE TABLE agi_gb2av.mutationstabelle_avmutation (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,beschrieb varchar(50) NULL
   ,dateinameplan varchar(80) NULL
   ,endetechnbereit varchar(10) NOT NULL
   ,istprojektmutation varchar(255) NOT NULL
 )
 ;
+CREATE INDEX mutationstabelle_avmuttion_t_basket_idx ON agi_gb2av.mutationstabelle_avmutation ( t_basket );
+CREATE INDEX mutationstabelle_avmuttion_t_datasetname_idx ON agi_gb2av.mutationstabelle_avmutation ( t_datasetname );
 COMMENT ON TABLE agi_gb2av.mutationstabelle_avmutation IS 'Angaben zu einer AV-Mutation.';
 COMMENT ON COLUMN agi_gb2av.mutationstabelle_avmutation.beschrieb IS 'Kommentar des Geometers zur Mutation.';
 COMMENT ON COLUMN agi_gb2av.mutationstabelle_avmutation.dateinameplan IS 'Name der Datei mit dem Bild des Mutationsplan. Das Dateiformat ist GIF oder PDF.';
@@ -379,18 +463,26 @@ COMMENT ON COLUMN agi_gb2av.mutationstabelle_avmutation.istprojektmutation IS 'H
 -- GB2AV.Mutationstabelle.AVMutationsAnnulation
 CREATE TABLE agi_gb2av.mutationstabelle_avmutationsannulation (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,bemerkungen varchar(200) NULL
 )
 ;
+CREATE INDEX mutatinstbll_vmttnsnnltion_t_basket_idx ON agi_gb2av.mutationstabelle_avmutationsannulation ( t_basket );
+CREATE INDEX mutatinstbll_vmttnsnnltion_t_datasetname_idx ON agi_gb2av.mutationstabelle_avmutationsannulation ( t_datasetname );
 COMMENT ON TABLE agi_gb2av.mutationstabelle_avmutationsannulation IS 'Meldung für die Widerrufung einer Mutation durch den Geometer. z.B. wenn die Frist abgelaufen ist oder der Kunde das Geschäft zurückzieht.';
 COMMENT ON COLUMN agi_gb2av.mutationstabelle_avmutationsannulation.bemerkungen IS 'z.B. der Grund für die Widerrufung';
 -- GB2AV.Mutationstabelle.AVMutationBetroffeneGrundstuecke
 CREATE TABLE agi_gb2av.mutationstabelle_avmutationbetroffenegrundstuecke (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av.t_ili2db_seq')
+  ,T_basket bigint NOT NULL
+  ,T_datasetname varchar(200) NOT NULL
   ,avmutation bigint NOT NULL
   ,betroffenegrundstuecke bigint NOT NULL
 )
 ;
+CREATE INDEX muttnstbll_vmrffngrndstcke_t_basket_idx ON agi_gb2av.mutationstabelle_avmutationbetroffenegrundstuecke ( t_basket );
+CREATE INDEX muttnstbll_vmrffngrndstcke_t_datasetname_idx ON agi_gb2av.mutationstabelle_avmutationbetroffenegrundstuecke ( t_datasetname );
 CREATE INDEX muttnstbll_vmrffngrndstcke_avmutation_idx ON agi_gb2av.mutationstabelle_avmutationbetroffenegrundstuecke ( avmutation );
 CREATE INDEX muttnstbll_vmrffngrndstcke_betroffenegrundstuecke_idx ON agi_gb2av.mutationstabelle_avmutationbetroffenegrundstuecke ( betroffenegrundstuecke );
 COMMENT ON COLUMN agi_gb2av.mutationstabelle_avmutationbetroffenegrundstuecke.avmutation IS 'Ein Grundstück hat keine Beziehung zu AVMutation, wenn es nicht Teil der Mutation ist, aber unter einem SDR (z.B. Baurecht) liegt, das Teil der Mutation ist.';
@@ -548,55 +640,78 @@ CREATE TABLE agi_gb2av.T_ILI2DB_META_ATTRS (
   ,attr_value varchar(1024) NOT NULL
 )
 ;
+ALTER TABLE agi_gb2av.flurname ADD CONSTRAINT flurname_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.flurname ADD CONSTRAINT flurname_grundstcsbsb_dstck_flrnmen_fkey FOREIGN KEY ( grundstcsbsb_grndsteck_flurnamen ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.gemeinde ADD CONSTRAINT gemeinde_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.gemeinde ADD CONSTRAINT gemeinde_bfsnr_check CHECK( bfsnr BETWEEN 1 AND 9999);
 ALTER TABLE agi_gb2av.gemeinde ADD CONSTRAINT gemeinde_grundstcsbsb_rndstck_gmnde_fkey FOREIGN KEY ( grundstcsbsb_grndsteck_gemeinde ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.grundstuecknummer ADD CONSTRAINT grundstuecknummer_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstuecknummer ADD CONSTRAINT grundstuecknummer_eigntmsvrhls_rndstck_nmmer_fkey FOREIGN KEY ( eigntmsvrhls_grndsteck_nummer ) REFERENCES agi_gb2av.eigentumsvrhltnis_grundstueck DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstuecknummer ADD CONSTRAINT grundstuecknummer_grundstcsbsb_rndstck_nmmer_fkey FOREIGN KEY ( grundstcsbsb_grndsteck_nummer ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstuecknummer ADD CONSTRAINT grundstuecknummer_mutationstbll_bschnitt_von_fkey FOREIGN KEY ( mutationstbll_bschnitt_von ) REFERENCES agi_gb2av.mutationstabelle_abschnitt DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstuecknummer ADD CONSTRAINT grundstuecknummer_muttnstbll_vmschtgrndstcke_fkey FOREIGN KEY ( mutationstabll_vmttion_geloeschtegrundstuecke ) REFERENCES agi_gb2av.mutationstabelle_avmutation DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.gbplan ADD CONSTRAINT gbplan_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.gbplan ADD CONSTRAINT gbplan_grundstcsbsb_dstck_gbplene_fkey FOREIGN KEY ( grundstcsbsb_grndsteck_gbplaene ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.gebaeudeeingangadresse ADD CONSTRAINT gebaeudeeingangadresse_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.gebaeudeeingangadresse ADD CONSTRAINT gebaeudeeingangadresse_plz_check CHECK( plz BETWEEN 1000 AND 9999);
 ALTER TABLE agi_gb2av.gebaeudeeingangadresse ADD CONSTRAINT gebaeudeeingangadresse_plzzusatzziffern_check CHECK( plzzusatzziffern BETWEEN 0 AND 99);
 ALTER TABLE agi_gb2av.gebaeudeeingangadresse ADD CONSTRAINT gebaeudeeingangadresse_gwr_egid_check CHECK( gwr_egid BETWEEN 1 AND 999999999);
 ALTER TABLE agi_gb2av.gebaeudeeingangadresse ADD CONSTRAINT gebaeudeeingangadresse_gwr_edid_check CHECK( gwr_edid BETWEEN 0 AND 99);
 ALTER TABLE agi_gb2av.gebaeudeeingangadresse ADD CONSTRAINT gebaeudeeingangadresse_grundstcsbschrib_gbd_drsse_fkey FOREIGN KEY ( grundstcsbschrib_gbude_adresse ) REFERENCES agi_gb2av.grundstcsbschrieb_gebaeude DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.mutationsnummer ADD CONSTRAINT mutationsnummer_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.mutationsnummer ADD CONSTRAINT mutationsnummer_grundstcsbsb_tvllzgnmttion_fkey FOREIGN KEY ( grundstcsbsb_grndsteck_letztevollzogenemutation ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.mutationsnummer ADD CONSTRAINT mutationsnummer_vollzgsggnszgnd_mttnsnmmer_fkey FOREIGN KEY ( vollzgsggnszgsggnstand_mutationsnummer ) REFERENCES agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.mutationsnummer ADD CONSTRAINT mutationsnummer_muttnstbll_vmtn_mttnsnmmer_fkey FOREIGN KEY ( mutationstabll_vmttion_mutationsnummer ) REFERENCES agi_gb2av.mutationstabelle_avmutation DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.mutationsnummer ADD CONSTRAINT mutationsnummer_muttnstbll_tttn_mttnsnmmer_fkey FOREIGN KEY ( muttnstbll_ttnsnnltion_mutationsnummer ) REFERENCES agi_gb2av.mutationstabelle_avmutationsannulation DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.eigentumsvrhltnis_grundstueck ADD CONSTRAINT eigentumsvrhltns_grndsteck_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.eigentumsvrhltnis_person ADD CONSTRAINT eigentumsvrhltnis_person_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_person ADD CONSTRAINT eigentumsvrhltnis_person_geburtsjahr_check CHECK( geburtsjahr BETWEEN 1880 AND 2100);
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_person ADD CONSTRAINT eigentumsvrhltnis_person_geburtsmonat_check CHECK( geburtsmonat BETWEEN 1 AND 12);
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_person ADD CONSTRAINT eigentumsvrhltnis_person_geburtstag_check CHECK( geburtstag BETWEEN 1 AND 31);
+ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtgrundstueck ADD CONSTRAINT eigntmsvrhltnrchtgrndsteck_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtgrundstueck ADD CONSTRAINT eigntmsvrhltnrchtgrndsteck_berechtigtesgrundstueck_fkey FOREIGN KEY ( berechtigtesgrundstueck ) REFERENCES agi_gb2av.eigentumsvrhltnis_grundstueck DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtgrundstueck ADD CONSTRAINT eigntmsvrhltrchtgrndsteck_anteilzaehler_check CHECK( anteilzaehler BETWEEN 1 AND 1000000000);
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtgrundstueck ADD CONSTRAINT eigntmsvrhltrchtgrndsteck_anteilnenner_check CHECK( anteilnenner BETWEEN 1 AND 1000000000);
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtgrundstueck ADD CONSTRAINT eigntmsvrhltnrchtgrndsteck_betroffenesgrundstueck_fkey FOREIGN KEY ( betroffenesgrundstueck ) REFERENCES agi_gb2av.eigentumsvrhltnis_grundstueck DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtperson ADD CONSTRAINT eigentumsvrhltns_rchtprson_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtperson ADD CONSTRAINT eigentumsvrhltns_rchtprson_berechtigter_fkey FOREIGN KEY ( berechtigter ) REFERENCES agi_gb2av.eigentumsvrhltnis_person DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtperson ADD CONSTRAINT eigentmsvrhltns_rchtprson_anteilzaehler_check CHECK( anteilzaehler BETWEEN 1 AND 1000000000);
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtperson ADD CONSTRAINT eigentmsvrhltns_rchtprson_anteilnenner_check CHECK( anteilnenner BETWEEN 1 AND 1000000000);
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_rechtperson ADD CONSTRAINT eigentumsvrhltns_rchtprson_betroffenesgrundstueck_fkey FOREIGN KEY ( betroffenesgrundstueck ) REFERENCES agi_gb2av.eigentumsvrhltnis_grundstueck DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber ADD CONSTRAINT eigntmsvrhltnmnschfttlhber_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber ADD CONSTRAINT eigntmsvrhltnmnschfttlhber_gemeinschaft_fkey FOREIGN KEY ( gemeinschaft ) REFERENCES agi_gb2av.eigentumsvrhltnis_person DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.eigentumsvrhltnis_gemeinschaftteilhaber ADD CONSTRAINT eigntmsvrhltnmnschfttlhber_teilhaber_fkey FOREIGN KEY ( teilhaber ) REFERENCES agi_gb2av.eigentumsvrhltnis_person DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.grundstcsbschrieb_avbemerkung ADD CONSTRAINT grundstcsbschrieb_vbmrkung_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.grundstcsbschrieb_bodbdanteil ADD CONSTRAINT grundstcsbschrib_bdbdnteil_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_bodbdanteil ADD CONSTRAINT grundstcsbschrb_bdbdnteil_flaechenmass_check CHECK( flaechenmass BETWEEN 0.0 AND 1.0E9);
 ALTER TABLE agi_gb2av.grundstcsbschrieb_bodbdanteil ADD CONSTRAINT grundstcsbschrib_bdbdnteil_grundstcsbsb_tck_bdbdnteil_fkey FOREIGN KEY ( grundstcsbsb_grndsteck_bodbdanteil ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.grundstcsbschrieb_gebaeude ADD CONSTRAINT grundstcsbschrieb_gebaeude_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_gebaeude ADD CONSTRAINT grundstcsbschrieb_gebaude_gwr_egid_check CHECK( gwr_egid BETWEEN 1 AND 999999999);
 ALTER TABLE agi_gb2av.grundstcsbschrieb_gebaeude ADD CONSTRAINT grundstcsbschrieb_gebaude_flaechenmass_check CHECK( flaechenmass BETWEEN 0.0 AND 1.0E9);
+ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueck ADD CONSTRAINT grundstcsbschrib_grndsteck_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueck ADD CONSTRAINT grundstcsbschrb_grndsteck_flaechenmass_check CHECK( flaechenmass BETWEEN 0.0 AND 1.0E9);
 ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueck ADD CONSTRAINT grundstcsbschrb_grndsteck_korrektur_check CHECK( korrektur BETWEEN -10000.0 AND 10000.0);
 ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueck ADD CONSTRAINT grundstcsbschrb_grndsteck_korrigiertesflaechenmass_check CHECK( korrigiertesflaechenmass BETWEEN 0.0 AND 1.0E9);
 ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueck ADD CONSTRAINT grundstcsbschrb_grndsteck_korrektur1_check CHECK( korrektur1 BETWEEN -10000.0 AND 10000.0);
 ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueck ADD CONSTRAINT grundstcsbschrb_grndsteck_korrigiertesflaechenmass1_check CHECK( korrigiertesflaechenmass1 BETWEEN 0.0 AND 1.0E9);
+ALTER TABLE agi_gb2av.grundstcsbschrieb_avbemerkunggrundstueck ADD CONSTRAINT grundstcsbschrknggrndsteck_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_avbemerkunggrundstueck ADD CONSTRAINT grundstcsbschrknggrndsteck_avbemerkung_fkey FOREIGN KEY ( avbemerkung ) REFERENCES agi_gb2av.grundstcsbschrieb_avbemerkung DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_avbemerkunggrundstueck ADD CONSTRAINT grundstcsbschrknggrndsteck_grundstueck_fkey FOREIGN KEY ( grundstueck ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueckgebaeude ADD CONSTRAINT grundstcsbschgrndstckgbude_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueckgebaeude ADD CONSTRAINT grundstcsbschgrndstckgbude_gebaeude_fkey FOREIGN KEY ( gebaeude ) REFERENCES agi_gb2av.grundstcsbschrieb_gebaeude DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueckgebaeude ADD CONSTRAINT grundstcsbschgrndstckgbude_grundstueck_fkey FOREIGN KEY ( grundstueck ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_grundstueckgebaeude ADD CONSTRAINT grundstcsbscgrndstckgbude_flaechenmass_check CHECK( flaechenmass BETWEEN 0.0 AND 1.0E9);
+ALTER TABLE agi_gb2av.grundstcsbschrieb_anteil ADD CONSTRAINT grundstcsbschrieb_anteil_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_anteil ADD CONSTRAINT grundstcsbschrieb_anteil_flaeche_fkey FOREIGN KEY ( flaeche ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_anteil ADD CONSTRAINT grundstcsbschrieb_anteil_liegt_auf_fkey FOREIGN KEY ( liegt_auf ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.grundstcsbschrieb_anteil ADD CONSTRAINT grundstcsbschrieb_anteil_flaechenmass_check CHECK( flaechenmass BETWEEN 0.0 AND 1.0E9);
+ALTER TABLE agi_gb2av.vollzugsgegnstnde_vollzugsgegenstand ADD CONSTRAINT vollzgsggnstnllzgsggnstand_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.mutationstabelle_abschnitt ADD CONSTRAINT mutationstabelle_abschnitt_grundstcsbsb_rndstck_zgang_fkey FOREIGN KEY ( grundstcsbsb_grndsteck_zugang ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.mutationstabelle_abschnitt ADD CONSTRAINT mutationstabelle_abschnitt_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.mutationstabelle_abschnitt ADD CONSTRAINT mutationstabelle_bschnitt_flaechenmass_check CHECK( flaechenmass BETWEEN 0.0 AND 1.0E9);
+ALTER TABLE agi_gb2av.mutationstabelle_avmutation ADD CONSTRAINT mutationstabelle_avmuttion_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.mutationstabelle_avmutationsannulation ADD CONSTRAINT mutatinstbll_vmttnsnnltion_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE agi_gb2av.mutationstabelle_avmutationbetroffenegrundstuecke ADD CONSTRAINT muttnstbll_vmrffngrndstcke_T_basket_fkey FOREIGN KEY ( T_basket ) REFERENCES agi_gb2av.T_ILI2DB_BASKET DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.mutationstabelle_avmutationbetroffenegrundstuecke ADD CONSTRAINT muttnstbll_vmrffngrndstcke_avmutation_fkey FOREIGN KEY ( avmutation ) REFERENCES agi_gb2av.mutationstabelle_avmutation DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.mutationstabelle_avmutationbetroffenegrundstuecke ADD CONSTRAINT muttnstbll_vmrffngrndstcke_betroffenegrundstuecke_fkey FOREIGN KEY ( betroffenegrundstuecke ) REFERENCES agi_gb2av.grundstcsbschrieb_grundstueck DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE agi_gb2av.T_ILI2DB_BASKET ADD CONSTRAINT T_ILI2DB_BASKET_dataset_fkey FOREIGN KEY ( dataset ) REFERENCES agi_gb2av.T_ILI2DB_DATASET DEFERRABLE INITIALLY DEFERRED;
@@ -1619,28 +1734,30 @@ MODEL GB2AV (de) =
   END Mutationstabelle;
 
 END GB2AV.
-','2019-10-15 11:57:08.277');
+','2019-10-16 07:40:01.123');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.createMetaInfo','True');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.beautifyEnumDispName','underscore');
-INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.interlis.ili2c.ilidirs','%ILI_FROM_DB;%XTF_DIR;http://models.interlis.ch/;%JAR_DIR');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.arrayTrafo','coalesce');
-INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.createForeignKeyIndex','yes');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.nameOptimization','topic');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.localisedTrafo','expand');
-INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.jsonTrafo','coalesce');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.numericCheckConstraints','create');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.sender','ili2pg-4.3.0-21cbac10c7e35a41346af1c5fc5d6980bb99609d');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.createForeignKey','yes');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.sqlgen.createGeomIndex','True');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.defaultSrsAuthority','EPSG');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.defaultSrsCode','2056');
+INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.uuidDefaultValue','uuid_generate_v4()');
+INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.StrokeArcs','enable');
+INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.multiLineTrafo','coalesce');
+INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.interlis.ili2c.ilidirs','%ILI_FROM_DB;%XTF_DIR;http://models.interlis.ch/;%JAR_DIR');
+INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.createForeignKeyIndex','yes');
+INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.createDatasetCols','addDatasetCol');
+INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.jsonTrafo','coalesce');
+INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.BasketHandling','readWrite');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.createEnumDefs','multiTable');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.maxSqlNameLength','60');
-INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.uuidDefaultValue','uuid_generate_v4()');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.inheritanceTrafo','smart1');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.catalogueRefTrafo','coalesce');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.multiPointTrafo','coalesce');
-INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.StrokeArcs','enable');
-INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.multiLineTrafo','coalesce');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.multiSurfaceTrafo','coalesce');
 INSERT INTO agi_gb2av.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.multilingualTrafo','expand');

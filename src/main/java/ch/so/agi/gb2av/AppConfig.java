@@ -10,7 +10,6 @@ import java.io.File;
 import javax.sql.DataSource;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.processor.idempotent.FileIdempotentRepository;
 import org.apache.camel.processor.idempotent.jdbc.JdbcMessageIdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,39 +23,28 @@ public class AppConfig {
 
     @Autowired
     CamelContext camelContext;
-
-    @Value("${app.idempotentFileUrl}")
-    private String idempotentFileUrl;
-
-    @Bean
-    public FileIdempotentRepository fileConsumerRepo() {
-        FileIdempotentRepository fileConsumerRepo = null;
-        try {
-            fileConsumerRepo = new FileIdempotentRepository();
-            fileConsumerRepo.setFileStore(new File(idempotentFileUrl));
-            fileConsumerRepo.setCacheSize(5000);
-            fileConsumerRepo.setMaxFileStoreSize(51200000);
-        } catch (Exception e) {
-            log.error("Caught exception inside Creating fileConsumerRepo ..." + e.getMessage());
-        }
-        if (fileConsumerRepo == null) {
-            log.error("fileConsumerRepo == null ...");
-        }
-        return fileConsumerRepo;
-    }
+        
+    @Value("${app.dbSchema}")
+    private String dbSchema;
     
-    // https://github.com/apache/camel/blob/master/components/camel-sql/src/main/java/org/apache/camel/processor/idempotent/jdbc/AbstractJdbcMessageIdRepository.java
-    // https://github.com/apache/camel/blob/master/components/camel-sql/src/main/java/org/apache/camel/processor/idempotent/jdbc/JdbcMessageIdRepository.java
     @Bean
     public JdbcMessageIdRepository jdbcConsumerRepo() {
+        String tableExistsString = "SELECT 1 FROM "+dbSchema+".CAMEL_MESSAGEPROCESSED WHERE 1 = 0";
+        String queryString = "SELECT COUNT(*) FROM "+dbSchema+".CAMEL_MESSAGEPROCESSED WHERE processorName = ? AND messageId = ?";
+        String insertString = "INSERT INTO "+dbSchema+".CAMEL_MESSAGEPROCESSED (processorName, messageId, createdAt) VALUES (?, ?, ?)";
+        String deleteString = "DELETE FROM "+dbSchema+".CAMEL_MESSAGEPROCESSED WHERE processorName = ? AND messageId = ?";
+        String clearString = "DELETE FROM "+dbSchema+".CAMEL_MESSAGEPROCESSED WHERE processorName = ?";
+        
         JdbcMessageIdRepository jdbcConsumerRepo = null;
-        jdbcConsumerRepo = new JdbcMessageIdRepository();
-//        jdbcConsumerRepo.setJdbcTemplate();
-//        JdbcTemplate asdaf;
-//        jdbcConsumerRepo.setDataSource(dataSource);
+        jdbcConsumerRepo = new JdbcMessageIdRepository(dataSource, "gb2av");
+        jdbcConsumerRepo.setCreateTableIfNotExists(false);
+        jdbcConsumerRepo.setTableExistsString(tableExistsString);
+        jdbcConsumerRepo.setQueryString(queryString);
+        jdbcConsumerRepo.setInsertString(insertString);
+        jdbcConsumerRepo.setDeleteString(deleteString);
+        jdbcConsumerRepo.setClearString(clearString);
         
-        
-        return null;
+        return jdbcConsumerRepo;
         
     }
 }
