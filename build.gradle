@@ -74,10 +74,10 @@ docker {
 task buildDockerImage(type: DockerBuildImage) {
     description = "Build docker image."
     inputDir = project.projectDir
-    tags = ["sogis/gb2av-web-service:"+ version, "sogis/gb2av-web-service:latest"]
-    labels = ["gb2av-web-service.created": new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), 
-            "gb2av-web-service.git_commit":  getCheckedOutGitCommitHash(), 
-            "gb2av-web-service.travis_build": version]
+    tags = ["sogis/gb2av:"+ version, "sogis/gb2av:latest"]
+    labels = ["gb2av.created": new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), 
+            "gb2av.git_commit":  getCheckedOutGitCommitHash(), 
+            "gb2av.travis_build": version]
 }
 
 task pushDockerImage_One(type: DockerPushImage) {
