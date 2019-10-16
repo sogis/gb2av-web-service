@@ -8,7 +8,7 @@ Importiert die Vollzugsmeldungen des Grundbuches an die Nachführungsgeometer in
 Umgesetzt ist der Prozess als Apache Camel Pipeline, die in Spring boot läuft.
 
 ## Betriebsdokumentation
-Bei jedem Git-Push wird mittels Travis das Docker-Image neu gebuildet und als `sogis/gb2av-web-service` mit den Tags `latest` und "Travis-Buildnummer" auf Docker Hub abgelegt. Auf der AGI-Testumgebung wird viertelstündlich das `latest`-Image deployed.
+Bei jedem Git-Push wird mittels Travis das Docker-Image neu gebuildet und als `sogis/gb2av` mit den Tags `latest` und "Travis-Buildnummer" auf Docker Hub abgelegt. Auf der AGI-Testumgebung wird viertelstündlich das `latest`-Image deployed.
 
 ### Konfiguration
 Die Datenbankverbindungsparameter (ohne Benutzer und Passwort) werden über Spring Boot Profile gesteuert. Für jede Umgebung gibt es eine `application-[dev|test|int|prod].properties`-Datei. Diese spezielle, zur "normalen" Properties-Datei zusätzliche Datei kann mit der speziellen Spring-Boot-Umgebungsvariable `SPRING_PROFILES_ACTIVE` gesteuert werden. Zum jetzigen Zeitpunkt werden diese Properties-Dateien in das Image gebrannt.
@@ -37,7 +37,7 @@ docker run --restart always -p 8080:8080 \
 -e "dbUserEdit=XXXXXX" \
 -e "dbPwdEdit=XXXXXX" \
 -e "TZ=Europe/Amsterdam" \
-sogis/gb2av-web-service
+sogis/gb2av
 ```
 
 ### SQL (ili2pg)
