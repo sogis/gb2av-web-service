@@ -5,7 +5,7 @@
 ## Beschreibung
 Importiert die Vollzugsmeldungen des Grundbuches an die Nachführungsgeometer in die Edit-Datenbank. Die Vollzugsmeldungen (INTERLIS-Dateien) werden vom Infogrips-FTP heruntergeladen, auf AWS-S3 archiviert und anschliessend importiert.
 
-Umgesetzt ist der Prozess als Apache Camel Pipeline, die in Spring boot läuft.
+Umgesetzt ist der Prozess als Apache Camel Pipeline, die in Spring Boot läuft.
 
 ## Betriebsdokumentation
 Bei jedem Git-Push wird mittels Travis das Docker-Image neu gebuildet und als `sogis/gb2av` mit den Tags `latest` und "Travis-Buildnummer" auf Docker Hub abgelegt. Auf der AGI-Testumgebung wird viertelstündlich das `latest`-Image deployed.
