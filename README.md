@@ -122,7 +122,7 @@ docker run --rm --name edit-db -p 54321:5432 --hostname primary \
 sogis/oereb-db
 ```
 
-Wir verwenden aus Bequemlichkeit das  `sogis/oereb-db` Image. Jedes andere PostgreSQL/PostGIS-Image tut es auch.
+Wir verwenden aus Bequemlichkeit das `sogis/oereb-db` Image. Jedes andere PostgreSQL/PostGIS-Image tut es auch.
 
 ```
 ILI2PG_PATH=/Users/stefan/apps/ili2pg-4.3.0/ili2pg-4.3.0.jar  
@@ -146,3 +146,28 @@ CREATE TABLE
 ;
 ```
 Muss im `postscript.sql` bei der Inbetriebnahme ausgeführt werden.
+
+## Lokale adhoc Auswertung
+
+### Import AV-Daten
+Dazu müssen die AV-Daten mittels GRETL-Job in die Datenbank importiert werden. Die AV-Daten werden heruntergeladen, die Nachführungskreise ändern nie bis selten und werden hier im Repo als XTF vorgehalten. Den DB-Container eventuell mit einem länger lebenden `pgdata`-Verzeichnis starten.
+
+```
+docker-compose up
+```
+
+```
+export ORG_GRADLE_PROJECT_dbUriEdit="jdbc:postgresql://edit-db/edit"
+export ORG_GRADLE_PROJECT_dbUserEdit="gretl"
+export ORG_GRADLE_PROJECT_dbPwdEdit="gretl"
+```
+
+```
+./start-gretl.sh --docker-image sogis/gretl-runtime:latest --docker-network gb2av-web-service_gb2av --job-directory $(pwd)/dev/ -b build.gradle createSchemaAdminEinteilung importAdminEinteilung createSchemaAdminEinteilung replaceCadastralSurveyingData
+```
+### Import Vollzugsmeldungen
+Der Importprozess der Vollzugsmeldungen wird in der IDE gestartet. Will man sich das Hochladen nach S3 ersparen, kommentiert man diese Route aus.
+
+### SQL-Auswertungen
+
+
