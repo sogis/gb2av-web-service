@@ -117,7 +117,7 @@ public class Gb2avRoute extends RouteBuilder {
         String dbDatabase = uri.getPath().substring(1);
         
         IlivalidatorPredicate isValid = new IlivalidatorPredicate();
-        from("file://"+pathToUnzipFolder+"/?noop=true&include=.*\\.xml&delay="+importDelay+"&initialDelay="+initialImportDelay+"&readLock=changed&idempotentRepository=#fileConsumerRepo&idempotentKey=ili2pg-${file:name}")
+        from("file://"+pathToUnzipFolder+"/?noop=true&include=.*\\.xml&delay="+importDelay+"&initialDelay="+initialImportDelay+"&readLock=changed&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ili2pg-${file:name}")
         .routeId("_import_")
         .choice()
             .when(isValid).toD("ili2pg:import?dbhost="+dbHost+"&dbport="+dbPort+"&dbdatabase="+dbDatabase+"&dbschema="+dbSchema+"&dbusr="+dbUser+"&dbpwd="+dbPwd+"&dataset=${file:onlyname.noext}")
