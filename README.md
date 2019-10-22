@@ -163,7 +163,7 @@ export ORG_GRADLE_PROJECT_dbPwdEdit="gretl"
 ```
 
 ```
-./start-gretl.sh --docker-image sogis/gretl-runtime:latest --docker-network gb2av-web-service_gb2av --job-directory $(pwd)/dev/ -b build.gradle createSchemaAdminEinteilung importAdminEinteilung createSchemaAdminEinteilung replaceCadastralSurveyingData
+./start-gretl.sh --docker-image sogis/gretl-runtime:latest --docker-network gb2av-web-service_gb2av --job-directory $(pwd)/dev/ -b build.gradle createSchemaAdminEinteilung importAdminEinteilung createSchemaCadastralSurveying replaceCadastralSurveyingData
 ```
 ### Import Vollzugsmeldungen
 Der Importprozess der Vollzugsmeldungen wird in der IDE gestartet. Will man sich das Hochladen nach S3 ersparen, kommentiert man diese Route aus.
