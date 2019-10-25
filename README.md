@@ -26,6 +26,9 @@ Zusätzlich müssen ENV-Variablen für Logins gesetzt werden und die korrekte Ti
 ### Persistenz
 Apache Camel verwendet sogenannte Idempotent-Repositories. In diesen Repositories wird gespeichert, welche Nachricht in welchem Prozess / in welcher Route bereits behandelt wurde. Dazu muss eine Tabelle in der Datenbank angelegt werden. Der benötigte DDL-Befehl ist im `postscript.sql` gespeichert.
 
+### Zusätzliche DB-Tabelle(n)
+Entgegen der Gepflogenheit, dass alle DB-Tabellen mit INTERLIS modelliert werden müssen, gibt es eine Auswertungstabelle, die "manuell" angelegt wird. Ebenfalls wie bei der Tabelle für das Idempotent-Repository steht das DDL in der `postscript.sql` Datei. Zu einem späteren Zeitpunkt soll diese Auswertungstabelle in einem INTERLIS-Modell für die sogenannten Fileverifikation aufgehen.
+
 ### Docker
 ```
 docker run --restart always -p 8080:8080 \
@@ -106,6 +109,10 @@ Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der 
     ]
 }
 ```
+
+### GRETL-Job
+
+Für das Controlling wird der GRETL-Job [https://github.com/sogis/gretljobs/tree/agi_av_vollzugsmeldungen/agi_av_vollzugsmeldungen](https://github.com/sogis/gretljobs/tree/agi_av_vollzugsmeldungen/agi_av_vollzugsmeldungen) benötigt. Er berechnet täglich die Differenz zwischen dem Grundbucheintrag (=Vollzugsmeldung) und dem heutigen Tag für Objekte der Tabelle `lsnachfuehrung` in der amtlichen Vermessung, die noch keinen Wert im Attribut `gbeintrag` haben. Neue werden hinzugefügt, bereits bestehende upgedatet ("UPSERT").
 
 ## Entwicklerdokumentation
 
