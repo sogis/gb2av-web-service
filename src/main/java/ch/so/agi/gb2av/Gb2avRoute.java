@@ -1,8 +1,6 @@
 package ch.so.agi.gb2av;
 
-import java.net.URI;
 import java.nio.ByteBuffer;
-import java.sql.Connection;
 
 import javax.sql.DataSource;
 
@@ -15,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import ch.so.agi.camel.predicates.IlivalidatorPredicate;
 
 @Component
 public class Gb2avRoute extends RouteBuilder {
@@ -107,20 +103,19 @@ public class Gb2avRoute extends RouteBuilder {
                 + "&secretKey=RAW({{awsSecretKey}})")
         .log(LoggingLevel.INFO, "File uploaded: ${in.header.CamelFileNameOnly}");
         
-        // Import to database.
-        // This does not work for all jdbc drivers:
-        String url = dataSource.getConnection().getMetaData().getURL();
-        String cleanUrl = url.substring(5);
-        URI uri = URI.create(cleanUrl);
-        String dbHost = uri.getHost();
-        String dbPort = String.valueOf(uri.getPort());
-        String dbDatabase = uri.getPath().substring(1);
+        // Import
+        IlivalidatorPredicate isValid = new IlivalidatorPredicate(); 
+        Ili2pgReplaceProcessor ili2pgProcessor = new Ili2pgReplaceProcessor();
         
-        IlivalidatorPredicate isValid = new IlivalidatorPredicate();
         from("file://"+pathToUnzipFolder+"/?noop=true&include=.*\\.xml&delay="+importDelay+"&initialDelay="+initialImportDelay+"&readLock=changed&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ili2pg-${file:name}")
         .routeId("_import_")
+        .setProperty("datasource", constant(dataSource))
+        .setProperty("dbschema", constant(dbSchema))
+        .setProperty("dbusr", constant(dbUser))
+        .setProperty("dbpwd", constant(dbPwd))
+        .setProperty("dataset", simple("${file:onlyname.noext}"))
         .choice()
-            .when(isValid).toD("ili2pg:import?dbhost="+dbHost+"&dbport="+dbPort+"&dbdatabase="+dbDatabase+"&dbschema="+dbSchema+"&dbusr="+dbUser+"&dbpwd="+dbPwd+"&dataset=${file:onlyname.noext}")
+            .when(isValid).process(ili2pgProcessor)
             .otherwise().to("file://"+pathToErrorFolder)
         .end();        
     }

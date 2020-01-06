@@ -53,7 +53,7 @@ java -jar ${ILI2PG_PATH} \
 --createscript agi_gb2av.sql
 ```
 
-Die Dateien `agi_gb2av.sql`, `prescript.sql` und `postscript.sql` liegen im Ordner `sql`.
+Die Dateien `agi_gb2av.sql`, `prescript.sql` und `postscript.sql` liegen im Ordner `sql`. **ACHTUNG:** Die für die GDI verwendeteten Dateien liegen im Ordner `G:\sogis\daten_tools\skripte\db_schema_definition_edit\agi_gb2av`.
 
 ### AWS-S3
 Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der Grupps ist die Policy `gb2av-S3` zugewiesen:
