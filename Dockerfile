@@ -13,4 +13,4 @@ RUN cd /home/gb2av && \
 
 USER 1001
 EXPOSE 8080
-CMD java -Xmx768m -jar gb2av-web-service.jar 
+CMD java -XX:MaxRAMPercentage=80.0 -jar gb2av-web-service.jar 
