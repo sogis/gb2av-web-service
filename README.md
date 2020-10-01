@@ -45,7 +45,7 @@ sogis/gb2av
 
 ### SQL (ili2pg)
 ```
-ILI2PG_PATH=/Users/stefan/apps/ili2pg-4.3.0/ili2pg-4.3.0.jar  
+ILI2PG_PATH=/Users/stefan/apps/ili2pg-4.3.1/ili2pg-4.3.1.jar  
 java -jar ${ILI2PG_PATH} \
 --dbschema agi_gb2av --models GB2AV \
 --defaultSrsCode 2056 --createGeomIdx --createFk --createFkIdx --createEnumTabs --beautifyEnumDispName --createMetaInfo --createNumChecks --nameByTopic --strokeArcs \
@@ -82,7 +82,10 @@ Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der 
             "Resource": [
                 "arn:aws:s3:::ch.so.agi.av.gb2av-dev/*",
                 "arn:aws:s3:::ch.so.agi.av.gb2av-test/*",
-                "arn:aws:s3:::ch.so.agi.av.gb2av/*"
+                "arn:aws:s3:::ch.so.agi.av.gb2av/*",
+                "arn:aws:s3:::ch.so.agi.av.av2gb-dev/*",
+                "arn:aws:s3:::ch.so.agi.av.av2gb-test/*",
+                "arn:aws:s3:::ch.so.agi.av.av2gb/*"
             ]
         },
         {
@@ -98,7 +101,13 @@ Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der 
                 "arn:aws:s3:::ch.so.agi.av.gb2av-test",
                 "arn:aws:s3:::ch.so.agi.av.gb2av-test/*",
                 "arn:aws:s3:::ch.so.agi.av.gb2av",
-                "arn:aws:s3:::ch.so.agi.av.gb2av/*"
+                "arn:aws:s3:::ch.so.agi.av.gb2av/*",
+                "arn:aws:s3:::ch.so.agi.av.av2gb-dev",
+                "arn:aws:s3:::ch.so.agi.av.av2gb-dev/*",
+                "arn:aws:s3:::ch.so.agi.av.av2gb-test",
+                "arn:aws:s3:::ch.so.agi.av.av2gb-test/*",
+                "arn:aws:s3:::ch.so.agi.av.av2gb",
+                "arn:aws:s3:::ch.so.agi.av.av2gb/*"
             ]
         },
         {

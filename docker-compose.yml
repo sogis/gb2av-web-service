@@ -1,6 +1,7 @@
 version: '3'
 services:
   edit-db:
+    hostname: primary  
     image: sogis/oereb-db
     environment:
       PG_DATABASE: edit
@@ -17,7 +18,7 @@ services:
       PG_READ_USER: ogc_server
       PG_READ_PASSWORD: ogc_server
     volumes:
-      - /Users/stefan/pgdata/gb2av:/pgdata:delegated
+      - ~/pgdata-gb2av:/pgdata:delegated
     networks:
       - gb2av
     ports:
