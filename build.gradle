@@ -45,18 +45,8 @@ dependencies {
     implementation "ch.interlis:ili2pg:4.3.1"    
     implementation "ch.interlis:ilivalidator:1.11.3"
     implementation "ch.ehi:ehibasics:1.2.0"
-    /*
-    implementation ('ch.so.agi.camel:camel-components:1.0.28') {
-        exclude group: 'org.slf4j', module: 'slf4j-simple'
-        //changing=true
-    }
-    */
-    /*
-    implementation ('ch.so.agi.camel:camel-ili2pg:1.0.18') {
-        exclude group: 'org.slf4j', module: 'slf4j-simple'
-        //changing=true
-    }
-    */
+    implementation 'com.rometools:rome:1.12.0'    
+
     runtimeOnly 'org.postgresql:postgresql'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
