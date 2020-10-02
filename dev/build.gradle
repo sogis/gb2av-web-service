@@ -1,7 +1,11 @@
 import ch.so.agi.gretl.api.TransferSet
 import ch.so.agi.gretl.tasks.*
-import java.nio.file.Paths
 import de.undercouch.gradle.tasks.download.Download
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import static java.nio.file.StandardCopyOption.*
+
 
 apply plugin: "de.undercouch.download"
 apply plugin: "ch.so.agi.gretl"
@@ -42,7 +46,7 @@ cadastralSurveyingDataSets.each { cadastralSurveyingDataSet ->
     def dataSet = cadastralSurveyingDataSet.toString()
     task "downloadCadastralSurveyingData_$dataSet"(type: Download) {
         description = "Download AV-Datensatz: ${dataSet}"
-        src cadastralSurveyingBaseUrl + dataSet + "00.itf"
+        src cadastralSurveyingBaseUrl + dataSet + "00.zip"
         dest pathToTempFolder
         overwrite true
 
@@ -51,12 +55,29 @@ cadastralSurveyingDataSets.each { cadastralSurveyingDataSet ->
         }        
     }
 
-    task "replaceCadastralSurveyingData_$dataSet"(type: Ili2pgReplace, dependsOn: "downloadCadastralSurveyingData_$dataSet") {
+    task "unzipCadastralSurveyingData_$dataSet"(type: Copy, dependsOn: "downloadCadastralSurveyingData_$dataSet") {
+        description = "Unzip heruntergeladene Daten"
+        from zipTree(Paths.get(pathToTempFolder, dataSet + "00.zip"))
+        into file(pathToUnzipFolder)
+        include "**/*.itf"
+        include "**/*.ITF"
+
+        doLast {
+            try {
+                Path yourFile = Paths.get(pathToUnzipFolder.toString()+"/"+dataSet.toString()+"00.ITF");
+                Files.move(yourFile, yourFile.resolveSibling(dataSet+"00.itf"));
+            } catch (Exception e) {}
+
+            println "File unzipped to directory: " + pathToUnzipFolder
+        }    
+    }
+
+    task "replaceCadastralSurveyingData_$dataSet"(type: Ili2pgReplace, dependsOn: "unzipCadastralSurveyingData_$dataSet") {
         description = "Import AV-Datensatz: ${dataSet}"
         database = [dbUriEdit, dbUserEdit, dbPwdEdit]
         models = iliModelCadastralSurveying
         dbschema = dbSchemaCadastralSurveying
-        dataFile = file(Paths.get(pathToTempFolder.toString(), dataSet + "00.itf"))
+        dataFile = file(Paths.get(pathToUnzipFolder.toString(), dataSet + "00.itf"))
         //topics = "DM01AVCH24LV95D.Liegenschaften;DM01AVCH24LV95D.Gemeindegrenzen;DM01AVCH24LV95D.Gebaeudeadressen"
         dataset = dataSet
         disableValidation = true
