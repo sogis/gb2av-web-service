@@ -2,6 +2,9 @@
 
 # gb2av-web-service
 
+## TODO
+- ...
+
 ## Beschreibung
 Importiert die Vollzugsmeldungen des Grundbuches an die Nachführungsgeometer in die Edit-Datenbank. Die Vollzugsmeldungen (INTERLIS-Dateien) werden vom Infogrips-FTP heruntergeladen, auf AWS-S3 archiviert und anschliessend importiert.
 
