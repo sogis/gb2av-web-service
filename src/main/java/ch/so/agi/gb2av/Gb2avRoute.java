@@ -78,9 +78,21 @@ public class Gb2avRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         
-        // Download form Infogrips FTP.
+        // Download Vollzugsmeldungen from Infogrips FTP.
         from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelay+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ftp-${file:name}")
-        .routeId("_download_")
+        .routeId("*downloadVollzugsmeldung*")
+        .to("file://"+pathToDownloadFolder)
+        .split(new ZipSplitter())
+        .streaming().convertBodyTo(ByteBuffer.class)
+            .choice()
+                .when(body().isNotNull())
+                    .to("file://"+pathToUnzipFolder) 
+            .end()
+        .end();   
+        
+        // Download Mutationstabellen from Infogrips FTP.
+        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\av2gb\\?password="+ftpPwdInfogrips+"&antInclude=*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelay+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ftp-${file:name}")
+        .routeId("*downloadMutationstabelle*")
         .to("file://"+pathToDownloadFolder)
         .split(new ZipSplitter())
         .streaming().convertBodyTo(ByteBuffer.class)
@@ -90,9 +102,9 @@ public class Gb2avRoute extends RouteBuilder {
             .end()
         .end();        
 
-        // Upload file to S3.
+        // Upload files to S3.
         from("file://"+pathToUnzipFolder+"/?noop=true&delay="+uploadDelay+"&initialDelay="+initialUploadDelay+"&readLock=changed&idempotentRepository=#jdbcConsumerRepo&idempotentKey=s3-${file:name}")
-        .routeId("_upload_")
+        .routeId("*uploadS3*")
         .convertBodyTo(byte[].class)
         .setHeader(S3Constants.CONTENT_LENGTH, simple("${in.header.CamelFileLength}"))
         .setHeader(S3Constants.KEY,simple("${in.header.CamelFileNameOnly}"))
@@ -108,7 +120,7 @@ public class Gb2avRoute extends RouteBuilder {
         Ili2pgReplaceProcessor ili2pgProcessor = new Ili2pgReplaceProcessor();
         
         from("file://"+pathToUnzipFolder+"/?noop=true&include=.*\\.xml&delay="+importDelay+"&initialDelay="+initialImportDelay+"&readLock=changed&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ili2pg-${file:name}")
-        .routeId("_import_")
+        .routeId("*import*")
         .setProperty("datasource", constant(dataSource))
         .setProperty("dbschema", constant(dbSchema))
         .setProperty("dbusr", constant(dbUser))

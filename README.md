@@ -186,4 +186,16 @@ Der Importprozess der Vollzugsmeldungen wird in der IDE gestartet. Will man sich
 
 ### SQL-Auswertungen
 
+## Migration Controlling-Tabelle (non-INTERLIS zu INTERLIS)
 
+```
+java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
+--dbschema agi_gb2av_controlling --models SO_AGI_GB2AV_Controlling_20201002 \
+--defaultSrsCode 2056 --createGeomIdx --createFk --createFkIdx --createUnique --createEnumTabs --beautifyEnumDispName --createMetaInfo --createNumChecks --nameByTopic --strokeArcs \
+--modeldir ".;http://models.geo.admin.ch" \
+--createscript agi_gb2av_controlling.sql
+```
+
+```
+
+```

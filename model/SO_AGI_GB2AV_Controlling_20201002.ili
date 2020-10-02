@@ -1,0 +1,65 @@
+INTERLIS 2.3;
+
+/** !!------------------------------------------------------------------------------
+ *  !! Version    | wer | Änderung
+ *  !!------------------------------------------------------------------------------
+ *  !! 2020-10-02 | sz  | Ersterfassung
+ *  !!==============================================================================
+ */
+!!@ technicalContact="mailto:agi@bd.so.ch"
+!!@ furtherInformation="http://geo.so.ch/models/AGI/SO_AGI_GB2AV_Controlling_20201002.uml"
+MODEL SO_AGI_GB2AV_Controlling_20201002 (de)
+AT "https://agi.so.ch"
+VERSION "2020-10-01"  =
+  IMPORTS CHAdminCodes_V1,GeometryCHLV95_V1;
+
+  TOPIC Controlling =
+    OID AS INTERLIS.UUIDOID;
+
+    /** Berechnung der Differenz (Delta) zwischen Vollzug einer Mutation im Grundbuch und Nachführung in den Daten der amtlichen Vermessung.
+     */
+    CLASS Vollzugsmeldung_GBAV_Delta =
+      /** Mutationsnummer
+       */
+      Mutationsnummer : MANDATORY TEXT*255;
+      /** Nummerierungsbereich
+       */
+      NBIdent : MANDATORY TEXT*255;
+      /** Differenz in Tagen
+       */
+      Delta : MANDATORY 0 .. 1000000;
+      /** Status der Mutation im Grundbuch gemäss Vollzugsmeldung
+       */
+      GB_Status : TEXT*255;
+      /** Bemerkungen aus der Vollzugsmeldung
+       */
+      GB_Bemerkungen : MTEXT*255;
+      /** Datum des Grundbucheintrages
+       */
+      GB_Grundbucheintrag : INTERLIS.XMLDate;
+      /** Datum des Eintrages im Tagebuch
+       */
+      GB_Tagebucheintrag : INTERLIS.XMLDate;
+      /** Nummer des Tagebuchbelegs
+       */
+      GB_Tagebuchbeleg : MTEXT*255;
+      /** Beschreibung der Mutation aus der amtlichen Vermessung (lsnachfuerhung.beschreibung)
+       */
+      AV_Beschreibung : TEXT*255;
+      /** Gueltigkeit der Mutation in den Daten der amtlichen Vermessung (lsnachfuerhung.gueltigkeit)
+       */
+      AV_Gueltigkeit : TEXT*255;
+      /** Datum des Eintrags der vollzogenen Mutation in den Daten der amtlichen Vermessung
+       */
+      AV_GueltigerEintrag : INTERLIS.XMLDate;
+      /** Zuständiger Nachführungsgeometer (resp. Firma)
+       */
+      AV_Firma : TEXT*255;
+      /** Name des ursprünglichen Datasets der Vollzugsmeldung.
+       */
+      Datasetname : MANDATORY TEXT*1024;
+    END Vollzugsmeldung_GBAV_Delta;
+
+  END Controlling;
+
+END SO_AGI_GB2AV_Controlling_20201002.
