@@ -196,6 +196,22 @@ java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
 --createscript agi_gb2av_controlling.sql
 ```
 
+Mit dbeaver Daten minimal umbauen und dann als INSERT-Befehle exportieren.
+
+```
+java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
+--dbhost localhost --dbport 54321 --dbdatabase edit --dbusr admin --dbpwd admin \
+--dbschema agi_gb2av_controlling --models SO_AGI_GB2AV_Controlling_20201002 \
+--modeldir "../model/;http://models.geo.admin.ch" \
+--export agi_gb2av_controlling_export.xtf
 ```
 
+Schema löschen, anschliessend Testimport:
+
+```
+java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
+--dbhost localhost --dbport 54321 --dbdatabase edit --dbusr admin --dbpwd admin \
+--dbschema agi_gb2av_controlling --models SO_AGI_GB2AV_Controlling_20201002 \
+--modeldir "../model/;http://models.geo.admin.ch" \
+--import agi_gb2av_controlling_export.xtf
 ```
