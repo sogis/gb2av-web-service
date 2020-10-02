@@ -77,7 +77,6 @@ public class Gb2avRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        /*
         // Download Vollzugsmeldungen from Infogrips FTP.
         from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelay+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ftp-${file:name}")
         .routeId("*downloadVollzugsmeldung*")
@@ -130,6 +129,5 @@ public class Gb2avRoute extends RouteBuilder {
             .when(isValid).process(ili2pgProcessor)
             .otherwise().to("file://"+pathToErrorFolder)
         .end();  
-        */
     }
 }
