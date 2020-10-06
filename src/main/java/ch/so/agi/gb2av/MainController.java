@@ -42,7 +42,7 @@ public class MainController {
 
     	Channel channel = new Channel();
         channel.setFeedType("rss_2.0");
-        channel.setTitle("GB2AV RSS Feed");
+        channel.setTitle("GB2AV Vollzugsmeldungen");
         channel.setDescription("Vollzugsmeldungen Grundbuch - Amtliche Vermessung");
         channel.setLink(ServletUriComponentsBuilder.fromCurrentContextPath().pathSegment("gb2av","rss.xml").toUriString());
         
@@ -64,7 +64,9 @@ public class MainController {
         		"    LEFT JOIN agi_gb2av.camel_messageprocessed AS messageprocessed\n" + 
         		"    ON messageprocessed.messageid = 'ili2pg-' || vollzugsgegenstand.t_datasetname || '.xml'\n" + 
         		"ORDER BY \n" + 
-        		"    importdatum DESC";
+        		"    importdatum DESC\n" +
+        		"LIMIT 100"
+        		;
         
         RowMapper<Gb2avMessage> rowMapper = new BeanPropertyRowMapper<Gb2avMessage>(Gb2avMessage.class);
         List<Gb2avMessage> messages = jdbcTemplate.query(sql, rowMapper);
@@ -77,7 +79,7 @@ public class MainController {
             Item item = new Item();
 
             item.setLink(awsBaseUrl + awsBucketName + "/" + message.getT_datasetname() + ".xml");
-            item.setTitle(message.getNummer() + " / " + message.getNbident());
+            item.setTitle(message.getNummer() + " / " + message.getNbident() + ": " + message.getStatus());
             item.setUri(awsBaseUrl + awsBucketName + "/" + message.getT_datasetname() + ".xml");
             
             Description descr = new Description();
