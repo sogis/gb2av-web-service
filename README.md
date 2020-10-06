@@ -4,6 +4,7 @@
 
 ## TODO
 - Validierung Update `grundbucheintrag` in `controlling_av2gb_mutationen`
+- Vollzugsmeldunge: GBEintrag aus AV (damit man sieht, ob es noch ändert), Geometrie?
 - Aufräumen 
 - Doku nachführen 
 
