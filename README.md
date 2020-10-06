@@ -3,7 +3,9 @@
 # gb2av-web-service
 
 ## TODO
-- ...
+- Validierung Update `grundbucheintrag` in `controlling_av2gb_mutationen`
+- Aufräumen 
+- Doku nachführen 
 
 ## Beschreibung
 Importiert die Vollzugsmeldungen des Grundbuches an die Nachführungsgeometer in die Edit-Datenbank. Die Vollzugsmeldungen (INTERLIS-Dateien) werden vom Infogrips-FTP heruntergeladen, auf AWS-S3 archiviert und anschliessend importiert.
@@ -191,6 +193,9 @@ Der Importprozess der Vollzugsmeldungen wird in der IDE gestartet. Will man sich
 
 ## Migration Controlling-Tabelle (non-INTERLIS zu INTERLIS)
 
+
+**TODO**: Modell hat geändert!!!!
+
 ```
 java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
 --dbschema agi_gb2av_controlling --models SO_AGI_GB2AV_Controlling_20201002 \
@@ -217,4 +222,14 @@ java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
 --dbschema agi_gb2av_controlling --models SO_AGI_GB2AV_Controlling_20201002 \
 --modeldir "../model/;http://models.geo.admin.ch" \
 --import agi_gb2av_controlling_export.xtf
+```
+
+## AV-Mutationen ans Grundbuch
+```
+java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
+--dbschema agi_gb2av_controlling_v2 --models SO_AGI_GB2AV_Controlling_20201002 \
+--defaultSrsCode 2056 --createGeomIdx --createFk --createFkIdx --createUnique --createEnumTabs --beautifyEnumDispName --createMetaInfo --createNumChecks --nameByTopic --strokeArcs \
+--coalesceJson \
+--modeldir ".;http://models.geo.admin.ch" \
+--createscript agi_gb2av_controlling_v2.sql
 ```

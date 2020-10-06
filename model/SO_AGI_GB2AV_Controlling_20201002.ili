@@ -18,7 +18,7 @@ VERSION "2020-10-01"  =
 
     /** Berechnung der Differenz (Delta) zwischen Vollzug einer Mutation im Grundbuch und Nachführung in den Daten der amtlichen Vermessung.
      */
-    CLASS Vollzugsmeldung_GBAV_Delta =
+    CLASS GB2AV_Vollzugsmeldung_Delta =
       /** Mutationsnummer
        */
       Mutationsnummer : MANDATORY TEXT*255;
@@ -52,13 +52,78 @@ VERSION "2020-10-01"  =
       /** Datum des Eintrags der vollzogenen Mutation in den Daten der amtlichen Vermessung
        */
       AV_GueltigerEintrag : INTERLIS.XMLDate;
+      /** Datum des Grundbucheintrags in den Daten der amtlichen Vermessung
+       */
+      AV_GBEintrag : INTERLIS.XMLDate;
       /** Zuständiger Nachführungsgeometer (resp. Firma)
        */
       AV_Firma : TEXT*255;
       /** Name des ursprünglichen Datasets der Vollzugsmeldung.
        */
       Datasetname : MANDATORY TEXT*1024;
-    END Vollzugsmeldung_GBAV_Delta;
+      UNIQUE Datasetname;
+    END GB2AV_Vollzugsmeldung_Delta;
+
+    /** Meldung des Grundbuchs an die amtliche Vermessung
+     */
+    STRUCTURE Vollzugsmeldung =
+      /** Mutationsnummer
+       */
+      Nummer : MANDATORY TEXT*255;
+      /** Nummerierungsbereich
+       */
+      NBIdent : MANDATORY TEXT*255;
+      /** Status der Mutation im Grundbuch
+       */
+      Status : TEXT*255;
+      /** Bemerkungen zu der Mutation
+       */
+      Bemerkungen : TEXT*1024;
+      /** Datum des Eintrags im Grundbuch
+       */
+      Grundbucheintrag : INTERLIS.XMLDate;
+      /** Datum des Eintrags im Tagebuch
+       */
+      Tagebucheintrag : INTERLIS.XMLDate;
+      /** Tagebuchbelegsnummer
+       */
+      Tagebuchbeleg : TEXT*255;
+      /** Name des Datasets
+       */
+      Datasetname : MANDATORY TEXT*1024;
+    END Vollzugsmeldung;
+
+    /** Mutationen der amtlichen Vermessung ans Grundbuch inkl. Vollzugsmeldungen
+     */
+    CLASS AV2GB_Mutationen =
+      /** Mutationsnummer
+       */
+      Mutationsnummer : MANDATORY TEXT*255;
+      /** Nummerierungsbereich
+       */
+      NBIdent : MANDATORY TEXT*255;
+      /** Beschrieb der Mutation
+       */
+      Beschrieb : TEXT*1024;
+      /** Name des mitgeschickten PDF
+       */
+      Dateinameplan : TEXT*1024;
+      /** Datum der technischen Fertigstellung der Mutation
+       */
+      EndeTechnBereit : INTERLIS.XMLDate;
+      !!@ ili2db.mapping="JSON"
+      Meldungen : BAG {0..*} OF SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung;
+      /** Ist Mutation im Grundbuch eingetragen (vollzogen)?
+       */
+      Grundbucheintrag : BOOLEAN;
+      /** Perimeter der Mutation
+       */
+      Perimeter : GeometryCHLV95_V1.MultiSurface;
+      /** Typ der Mutation
+       */
+      IstProjektmutation : MANDATORY TEXT*255;
+      UNIQUE Dateinameplan;
+    END AV2GB_Mutationen;
 
   END Controlling;
 
