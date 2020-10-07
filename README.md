@@ -61,6 +61,8 @@ sogis/gb2av
 
 ### SQL (ili2pg)
 
+**ACHTUNG:** Die für die GDI verwendeteten Dateien liegen im Ordner `G:\sogis\daten_tools\skripte\db_schema_definition_edit\agi_gb2av(_controlling)`.
+
 #### agi_gb2av
 ```
 ILI2PG_PATH=/Users/stefan/apps/ili2pg-4.3.1/ili2pg-4.3.1.jar  
@@ -71,17 +73,15 @@ java -jar ${ILI2PG_PATH} \
 --createscript agi_gb2av.sql
 ```
 
-Die Dateien `agi_gb2av.sql`, `prescript.sql` und `postscript.sql` liegen im Ordner `sql`. **ACHTUNG:** Die für die GDI verwendeteten Dateien liegen im Ordner `G:\sogis\daten_tools\skripte\db_schema_definition_edit\agi_gb2av`.
-
 #### agi_gb2av_controlling
 ````
 ILI2PG_PATH=/Users/stefan/apps/ili2pg-4.3.1/ili2pg-4.3.1.jar  
 java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
---dbschema agi_gb2av_controlling --models SO_AGI_GB2AV_Controlling_20201002 \
+--dbschema agi_gb2av_controlling_pub --models SO_AGI_GB2AV_Controlling_20201002 \
 --defaultSrsCode 2056 --createGeomIdx --createFk --createFkIdx --createUnique --createEnumTabs --beautifyEnumDispName --createMetaInfo --createNumChecks --nameByTopic --strokeArcs \
 --coalesceJson \
 --modeldir ".;http://models.geo.admin.ch" \
---createscript agi_gb2av_controlling.sql
+--createscript agi_gb2av_controlling_pub.sql
 ````
 
 

@@ -1,3 +1,20 @@
+CREATE OR REPLACE VIEW agi_gb2av_controlling.controlling_av2gb_mutationen_v AS
+    SELECT 
+        t_id,
+        t_ili_tid,
+        mutationsnummer,
+        nbident,
+        beschrieb,
+        dateinameplan,
+        endetechnbereit,
+        CAST(meldungen AS text),
+        grundbucheintrag,
+        istprojektmutation,
+        perimeter
+    FROM 
+       agi_gb2av_controlling.controlling_av2gb_mutationen
+;
+
 COMMENT ON SCHEMA
    agi_gb2av_controlling
 IS
