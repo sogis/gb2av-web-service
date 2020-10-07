@@ -5,17 +5,11 @@
 ## TODO
 - Validierung Update `grundbucheintrag LIKE...` in `controlling_av2gb_mutationen`
 - Validierung: Records werden erst INSERTED wenn es Geometrien dazu gibt. Sollte konzeptionell funktionieren. Sie tauchen eventuell einfach später in der Tabelle.
-- Remove CurveToLine etc. in Produktion
-- Vollzugsmeldunge: GBEintrag aus AV (damit man sieht, ob es noch ändert), Geometrie?
-- Gretljob "controlling", damit es parallel laufen kann (in test):
-  * UPSERT für Vollzugsmeldungen: zwei UPSERTS (wegen Geometrie und Delta)
-  * UPSERT für AV-Mutationen
+- Remove CurveToLine etc. in GDI (da AV ohne Kreisbogen)
 - Layer in Web GIS Client erfassen
 - Aufräumen 
 - Doku nachführen 
-
-
-
+  * GRETL-Job nachführen
 
 
 ## Beschreibung
@@ -24,6 +18,8 @@ Importiert die AV-Mutationen vom Nachführungsgeometer an das Grundbuch und die 
 Umgesetzt ist der Prozess als Apache Camel Pipeline, die in Spring Boot läuft.
 
 Es steht ein RSS-Feed für die Vollzugsmeldungen zur Verfügung. Dieser kann z.B. in Outlook importiert werden damit man bei einer neuen Vollzugsmeldung benachrichtigt wird. Es werden jeweils die 100 aktuellsten Vollzugsmeldungen im RSS-Feed publiziert. Sie werden nicht nach NF-Geometer o.ä. gefiltert.
+
+Siehe GRETL-Jobs für Informationen über die Auswertungen etc.
 
 ## Betriebsdokumentation
 Bei jedem Git-Push wird mittels Travis das Docker-Image neu gebuildet und als `sogis/gb2av` mit den Tags `latest` und "Travis-Buildnummer" auf Docker Hub abgelegt. Auf der AGI-Testumgebung wird viertelstündlich das `latest`-Image deployed.
