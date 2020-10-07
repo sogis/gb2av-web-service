@@ -19,9 +19,11 @@
 
 
 ## Beschreibung
-Importiert die Vollzugsmeldungen des Grundbuches an die Nachführungsgeometer in die Edit-Datenbank. Die Vollzugsmeldungen (INTERLIS-Dateien) werden vom Infogrips-FTP heruntergeladen, auf AWS-S3 archiviert und anschliessend importiert.
+Importiert die AV-Mutationen vom Nachführungsgeometer an das Grundbuch und die Vollzugsmeldungen des Grundbuches an die Nachführungsgeometer in die Edit-Datenbank. Die INTERLIS-Dateien werden vom Infogrips-FTP heruntergeladen, auf AWS-S3 archiviert und anschliessend importiert. Da die AV-Mutationen nur sehr kurz auf dem FTP-Server liegen, wird alle 10 Sekunden geprüft, ob neue Mutationen vorliegen. Es ist aber nicht klar, ob so wirklich alle Mutationen behandelt werden können. Die Vollzugsmeldungen werden nicht gelöscht und sind langfristig verfügbar.
 
 Umgesetzt ist der Prozess als Apache Camel Pipeline, die in Spring Boot läuft.
+
+Es steht ein RSS-Feed für die Vollzugsmeldungen zur Verfügung. Dieser kann z.B. in Outlook importiert werden damit man bei einer neuen Vollzugsmeldung benachrichtigt wird. Es werden jeweils die 100 aktuellsten Vollzugsmeldungen im RSS-Feed publiziert. Sie werden nicht nach NF-Geometer o.ä. gefiltert.
 
 ## Betriebsdokumentation
 Bei jedem Git-Push wird mittels Travis das Docker-Image neu gebuildet und als `sogis/gb2av` mit den Tags `latest` und "Travis-Buildnummer" auf Docker Hub abgelegt. Auf der AGI-Testumgebung wird viertelstündlich das `latest`-Image deployed.
@@ -84,8 +86,6 @@ java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
 --createscript agi_gb2av_controlling_pub.sql
 ````
 
-
-
 ### AWS-S3
 Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der Grupps ist die Policy `gb2av-S3` zugewiesen:
 
@@ -143,7 +143,7 @@ Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der 
 
 ### GRETL-Job
 
-Für das Controlling wird der GRETL-Job [https://github.com/sogis/gretljobs/tree/agi_av_vollzugsmeldungen/agi_av_vollzugsmeldungen](https://github.com/sogis/gretljobs/tree/agi_av_vollzugsmeldungen/agi_av_vollzugsmeldungen) benötigt. Er berechnet täglich die Differenz zwischen dem Grundbucheintrag (=Vollzugsmeldung) und dem heutigen Tag für Objekte der Tabelle `lsnachfuehrung` in der amtlichen Vermessung, die noch keinen Wert im Attribut `gbeintrag` haben. Neue werden hinzugefügt, bereits bestehende upgedatet ("UPSERT").
+Für das Controlling wird der GRETL-Job [https://github.com/sogis/gretljobs/tree/master/agi_gb2av](https://github.com/sogis/gretljobs/tree/master/agi_gb2av) benötigt. Er berechnet täglich die Differenz zwischen dem Grundbucheintrag (=Vollzugsmeldung) und dem heutigen Tag für Objekte der Tabelle `lsnachfuehrung` in der amtlichen Vermessung, die noch keinen Wert im Attribut `gbeintrag` haben. Neue werden hinzugefügt, bereits bestehende upgedatet ("UPSERT").
 
 ## Entwicklerdokumentation
 
@@ -207,11 +207,10 @@ export ORG_GRADLE_PROJECT_dbPwdEdit="gretl"
 Der Importprozess der Vollzugsmeldungen wird in der IDE gestartet. Will man sich das Hochladen nach S3 ersparen, kommentiert man diese Route aus.
 
 ### SQL-Auswertungen
+...
 
-## Migration Controlling-Tabelle (non-INTERLIS zu INTERLIS)
-
-
-**TODO**: Modell hat geändert!!!!
+## Migrationen
+### Controlling-Tabelle (non-INTERLIS zu INTERLIS)
 
 ```
 java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
@@ -262,12 +261,3 @@ java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
 --import agi_gb2av_controlling_export.xtf
 ```
 
-## AV-Mutationen ans Grundbuch
-```
-java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
---dbschema agi_gb2av_controlling_v2 --models SO_AGI_GB2AV_Controlling_20201002 \
---defaultSrsCode 2056 --createGeomIdx --createFk --createFkIdx --createUnique --createEnumTabs --beautifyEnumDispName --createMetaInfo --createNumChecks --nameByTopic --strokeArcs \
---coalesceJson \
---modeldir ".;http://models.geo.admin.ch" \
---createscript agi_gb2av_controlling_v2.sql
-```
