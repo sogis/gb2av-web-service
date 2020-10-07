@@ -1,3 +1,8 @@
+/*
+ * AV-Mutationen werden - falls noch nicht vorhanden - in die Tabelle
+ * INSERTed. Falls sie bereits vorhanden ist, werden nur die Meldungen
+ * vom Grundbuch an die amtliche Vermessung UPDATEd.
+ */
 WITH meldungen AS 
 (
     SELECT
@@ -69,7 +74,7 @@ mutationen AS
         mutation.istprojektmutation    
 )
 INSERT INTO 
-    agi_gb2av_controlling_v2.controlling_av2gb_mutationen
+    agi_gb2av_controlling.controlling_av2gb_mutationen
     (
         mutationsnummer,
         nbident,
@@ -106,3 +111,4 @@ DO
     SET 
         meldungen = EXCLUDED.meldungen,
         grundbucheintrag = EXCLUDED.grundbucheintrag
+;

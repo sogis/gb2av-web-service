@@ -45,8 +45,11 @@ public class Gb2avRoute extends RouteBuilder {
     @Value("${app.awsBucketName}")
     private String awsBucketName;
 
-    @Value("${app.downloadDelay}")
-    private String downloadDelay;
+    @Value("${app.downloadDelayGb2Av}")
+    private String downloadDelayGb2Av;
+    
+    @Value("${app.downloadDelayAv2Gb}")
+    private String downloadDelayAv2Gb;    
 
     @Value("${app.uploadDelay}")
     private String uploadDelay;
@@ -78,7 +81,7 @@ public class Gb2avRoute extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         // Download Vollzugsmeldungen from Infogrips FTP.
-        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelay+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ftp-${file:name}")
+        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\gb2av\\?password="+ftpPwdInfogrips+"&antInclude=VOLLZUG*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelayGb2Av+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ftp-${file:name}")
         .routeId("*downloadVollzugsmeldung*")
         .to("file://"+pathToDownloadFolder)
         .split(new ZipSplitter())
@@ -90,7 +93,7 @@ public class Gb2avRoute extends RouteBuilder {
         .end();   
         
         // Download Mutationstabellen from Infogrips FTP.
-        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\av2gb\\?password="+ftpPwdInfogrips+"&antInclude=*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelay+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ftp-${file:name}")
+        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\av2gb\\?password="+ftpPwdInfogrips+"&antInclude=*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelayAv2Gb+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ftp-${file:name}")
         .routeId("*downloadMutationstabelle*")
         .to("file://"+pathToDownloadFolder)
         .split(new ZipSplitter())

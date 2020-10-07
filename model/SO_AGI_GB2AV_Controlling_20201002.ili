@@ -61,7 +61,13 @@ VERSION "2020-10-01"  =
       /** Name des ursprünglichen Datasets der Vollzugsmeldung.
        */
       Datasetname : MANDATORY TEXT*1024;
-      UNIQUE Datasetname;
+      /** Geometrien der betroffen Grundstücke (als Multipolygon)
+       */
+      Perimeter : GeometryCHLV95_V1.MultiSurface;
+      /** Art des Grundstückes
+       */
+      Grundstuecksart : MANDATORY TEXT*255;
+      UNIQUE Datasetname,Grundstuecksart;
     END GB2AV_Vollzugsmeldung_Delta;
 
     /** Meldung des Grundbuchs an die amtliche Vermessung

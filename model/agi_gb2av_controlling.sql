@@ -1,7 +1,23 @@
 CREATE SCHEMA IF NOT EXISTS agi_gb2av_controlling;
 CREATE SEQUENCE agi_gb2av_controlling.t_ili2db_seq;;
--- SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta
-CREATE TABLE agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta (
+-- GeometryCHLV95_V1.SurfaceStructure
+CREATE TABLE agi_gb2av_controlling.surfacestructure (
+  T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av_controlling.t_ili2db_seq')
+  ,T_Seq bigint NULL
+  ,surface geometry(POLYGON,2056) NULL
+  ,multisurface_surfaces bigint NULL
+)
+;
+CREATE INDEX surfacestructure_surface_idx ON agi_gb2av_controlling.surfacestructure USING GIST ( surface );
+CREATE INDEX surfacestructure_multisurface_surfaces_idx ON agi_gb2av_controlling.surfacestructure ( multisurface_surfaces );
+-- GeometryCHLV95_V1.MultiSurface
+CREATE TABLE agi_gb2av_controlling.multisurface (
+  T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av_controlling.t_ili2db_seq')
+  ,T_Seq bigint NULL
+)
+;
+-- SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta
+CREATE TABLE agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta (
   T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av_controlling.t_ili2db_seq')
   ,T_Ili_Tid uuid NULL DEFAULT uuid_generate_v4()
   ,mutationsnummer varchar(255) NOT NULL
@@ -15,24 +31,79 @@ CREATE TABLE agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta (
   ,av_beschreibung varchar(255) NULL
   ,av_gueltigkeit varchar(255) NULL
   ,av_gueltigereintrag date NULL
+  ,av_gbeintrag date NULL
   ,av_firma varchar(255) NULL
+  ,datasetname varchar(1024) NOT NULL
+  ,perimeter geometry(MULTIPOLYGON,2056) NULL
+  ,grundstuecksart varchar(255) NOT NULL
+)
+;
+CREATE INDEX contrllng_gb2zgsmldng_dlta_perimeter_idx ON agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta USING GIST ( perimeter );
+COMMENT ON TABLE agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta IS 'Berechnung der Differenz (Delta) zwischen Vollzug einer Mutation im Grundbuch und Nachführung in den Daten der amtlichen Vermessung.';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.mutationsnummer IS 'Mutationsnummer';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.nbident IS 'Nummerierungsbereich';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.delta IS 'Differenz in Tagen';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.gb_status IS 'Status der Mutation im Grundbuch gemäss Vollzugsmeldung';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.gb_bemerkungen IS 'Bemerkungen aus der Vollzugsmeldung';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.gb_grundbucheintrag IS 'Datum des Grundbucheintrages';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.gb_tagebucheintrag IS 'Datum des Eintrages im Tagebuch';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.gb_tagebuchbeleg IS 'Nummer des Tagebuchbelegs';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.av_beschreibung IS 'Beschreibung der Mutation aus der amtlichen Vermessung (lsnachfuerhung.beschreibung)';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.av_gueltigkeit IS 'Gueltigkeit der Mutation in den Daten der amtlichen Vermessung (lsnachfuerhung.gueltigkeit)';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.av_gueltigereintrag IS 'Datum des Eintrags der vollzogenen Mutation in den Daten der amtlichen Vermessung';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.av_gbeintrag IS 'Datum des Grundbucheintrags in den Daten der amtlichen Vermessung';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.av_firma IS 'Zuständiger Nachführungsgeometer (resp. Firma)';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.datasetname IS 'Name des ursprünglichen Datasets der Vollzugsmeldung.';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.perimeter IS 'Geometrien der betroffen Grundstücke (als Multipolygon)';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta.grundstuecksart IS 'Art des Grundstückes';
+-- SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung
+CREATE TABLE agi_gb2av_controlling.controlling_vollzugsmeldung (
+  T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av_controlling.t_ili2db_seq')
+  ,T_Seq bigint NULL
+  ,nummer varchar(255) NOT NULL
+  ,nbident varchar(255) NOT NULL
+  ,astatus varchar(255) NULL
+  ,bemerkungen varchar(1024) NULL
+  ,grundbucheintrag date NULL
+  ,tagebucheintrag date NULL
+  ,tagebuchbeleg varchar(255) NULL
   ,datasetname varchar(1024) NOT NULL
 )
 ;
-COMMENT ON TABLE agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta IS 'Berechnung der Differenz (Delta) zwischen Vollzug einer Mutation im Grundbuch und Nachführung in den Daten der amtlichen Vermessung.';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.mutationsnummer IS 'Mutationsnummer';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.nbident IS 'Nummerierungsbereich';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.delta IS 'Differenz in Tagen';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.gb_status IS 'Status der Mutation im Grundbuch gemäss Vollzugsmeldung';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.gb_bemerkungen IS 'Bemerkungen aus der Vollzugsmeldung';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.gb_grundbucheintrag IS 'Datum des Grundbucheintrages';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.gb_tagebucheintrag IS 'Datum des Eintrages im Tagebuch';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.gb_tagebuchbeleg IS 'Nummer des Tagebuchbelegs';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.av_beschreibung IS 'Beschreibung der Mutation aus der amtlichen Vermessung (lsnachfuerhung.beschreibung)';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.av_gueltigkeit IS 'Gueltigkeit der Mutation in den Daten der amtlichen Vermessung (lsnachfuerhung.gueltigkeit)';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.av_gueltigereintrag IS 'Datum des Eintrags der vollzogenen Mutation in den Daten der amtlichen Vermessung';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.av_firma IS 'Zuständiger Nachführungsgeometer (resp. Firma)';
-COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta.datasetname IS 'Name des ursprünglichen Datasets der Vollzugsmeldung.';
+COMMENT ON TABLE agi_gb2av_controlling.controlling_vollzugsmeldung IS 'Meldung des Grundbuchs an die amtliche Vermessung';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung.nummer IS 'Mutationsnummer';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung.nbident IS 'Nummerierungsbereich';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung.astatus IS 'Status der Mutation im Grundbuch';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung.bemerkungen IS 'Bemerkungen zu der Mutation';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung.grundbucheintrag IS 'Datum des Eintrags im Grundbuch';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung.tagebucheintrag IS 'Datum des Eintrags im Tagebuch';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung.tagebuchbeleg IS 'Tagebuchbelegsnummer';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_vollzugsmeldung.datasetname IS 'Name des Datasets';
+-- SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen
+CREATE TABLE agi_gb2av_controlling.controlling_av2gb_mutationen (
+  T_Id bigint PRIMARY KEY DEFAULT nextval('agi_gb2av_controlling.t_ili2db_seq')
+  ,T_Ili_Tid uuid NULL DEFAULT uuid_generate_v4()
+  ,mutationsnummer varchar(255) NOT NULL
+  ,nbident varchar(255) NOT NULL
+  ,beschrieb varchar(1024) NULL
+  ,dateinameplan varchar(1024) NULL
+  ,endetechnbereit date NULL
+  ,meldungen jsonb NULL
+  ,grundbucheintrag boolean NULL
+  ,perimeter geometry(MULTIPOLYGON,2056) NULL
+  ,istprojektmutation varchar(255) NOT NULL
+)
+;
+CREATE INDEX controlling_av2gb_mutatnen_perimeter_idx ON agi_gb2av_controlling.controlling_av2gb_mutationen USING GIST ( perimeter );
+COMMENT ON TABLE agi_gb2av_controlling.controlling_av2gb_mutationen IS 'Mutationen der amtlichen Vermessung ans Grundbuch inkl. Vollzugsmeldungen';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_av2gb_mutationen.mutationsnummer IS 'Mutationsnummer';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_av2gb_mutationen.nbident IS 'Nummerierungsbereich';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_av2gb_mutationen.beschrieb IS 'Beschrieb der Mutation';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_av2gb_mutationen.dateinameplan IS 'Name des mitgeschickten PDF';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_av2gb_mutationen.endetechnbereit IS 'Datum der technischen Fertigstellung der Mutation';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_av2gb_mutationen.grundbucheintrag IS 'Ist Mutation im Grundbuch eingetragen (vollzogen)?';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_av2gb_mutationen.perimeter IS 'Perimeter der Mutation';
+COMMENT ON COLUMN agi_gb2av_controlling.controlling_av2gb_mutationen.istprojektmutation IS 'Typ der Mutation';
 CREATE TABLE agi_gb2av_controlling.T_ILI2DB_BASKET (
   T_Id bigint PRIMARY KEY
   ,dataset bigint NULL
@@ -106,7 +177,12 @@ CREATE TABLE agi_gb2av_controlling.T_ILI2DB_META_ATTRS (
   ,attr_value varchar(1024) NOT NULL
 )
 ;
-ALTER TABLE agi_gb2av_controlling.controlling_vollzugsmeldung_gbav_delta ADD CONSTRAINT contrllng_vlldng_gbv_dlta_delta_check CHECK( delta BETWEEN 0 AND 1000000);
+ALTER TABLE agi_gb2av_controlling.surfacestructure ADD CONSTRAINT surfacestructure_multisurface_surfaces_fkey FOREIGN KEY ( multisurface_surfaces ) REFERENCES agi_gb2av_controlling.multisurface DEFERRABLE INITIALLY DEFERRED;
+CREATE UNIQUE INDEX contrllnldng_dlta_datasetname_grundstuecksart_key ON agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta (datasetname,grundstuecksart)
+;
+ALTER TABLE agi_gb2av_controlling.controlling_gb2av_vollzugsmeldung_delta ADD CONSTRAINT contrllng_gbzgsmldng_dlta_delta_check CHECK( delta BETWEEN 0 AND 1000000);
+CREATE UNIQUE INDEX controlling_av2gb_mutatnen_dateinameplan_key ON agi_gb2av_controlling.controlling_av2gb_mutationen (dateinameplan)
+;
 ALTER TABLE agi_gb2av_controlling.T_ILI2DB_BASKET ADD CONSTRAINT T_ILI2DB_BASKET_dataset_fkey FOREIGN KEY ( dataset ) REFERENCES agi_gb2av_controlling.T_ILI2DB_DATASET DEFERRABLE INITIALLY DEFERRED;
 CREATE UNIQUE INDEX T_ILI2DB_DATASET_datasetName_key ON agi_gb2av_controlling.T_ILI2DB_DATASET (datasetName)
 ;
@@ -114,25 +190,88 @@ CREATE UNIQUE INDEX T_ILI2DB_MODEL_modelName_iliversion_key ON agi_gb2av_control
 ;
 CREATE UNIQUE INDEX T_ILI2DB_ATTRNAME_ColOwner_SqlName_key ON agi_gb2av_controlling.T_ILI2DB_ATTRNAME (ColOwner,SqlName)
 ;
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_CLASSNAME (IliName,SqlName) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta','controlling_vollzugsmeldung_gbav_delta');
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.NBIdent','nbident','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.Delta','delta','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.AV_Beschreibung','av_beschreibung','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.GB_Grundbucheintrag','gb_grundbucheintrag','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.Datasetname','datasetname','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.GB_Bemerkungen','gb_bemerkungen','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.GB_Tagebucheintrag','gb_tagebucheintrag','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.Mutationsnummer','mutationsnummer','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.AV_GueltigerEintrag','av_gueltigereintrag','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.GB_Status','gb_status','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.AV_Firma','av_firma','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.GB_Tagebuchbeleg','gb_tagebuchbeleg','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta.AV_Gueltigkeit','av_gueltigkeit','controlling_vollzugsmeldung_gbav_delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_TRAFO (iliname,tag,setting) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta','ch.ehi.ili2db.inheritance','newClass');
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_INHERITANCE (thisClass,baseClass) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung_GBAV_Delta',NULL);
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_vollzugsmeldung_gbav_delta',NULL,'gb_bemerkungen','ch.ehi.ili2db.textKind','MTEXT');
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_vollzugsmeldung_gbav_delta',NULL,'gb_tagebuchbeleg','ch.ehi.ili2db.textKind','MTEXT');
-INSERT INTO agi_gb2av_controlling.T_ILI2DB_TABLE_PROP (tablename,tag,setting) VALUES ('controlling_vollzugsmeldung_gbav_delta','ch.ehi.ili2db.tableKind','CLASS');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_CLASSNAME (IliName,SqlName) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung','controlling_vollzugsmeldung');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_CLASSNAME (IliName,SqlName) VALUES ('GeometryCHLV95_V1.MultiSurface','multisurface');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_CLASSNAME (IliName,SqlName) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen','controlling_av2gb_mutationen');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_CLASSNAME (IliName,SqlName) VALUES ('GeometryCHLV95_V1.SurfaceStructure','surfacestructure');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_CLASSNAME (IliName,SqlName) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta','controlling_gb2av_vollzugsmeldung_delta');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('GeometryCHLV95_V1.MultiSurface.Surfaces','multisurface_surfaces','surfacestructure','multisurface');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.GB_Tagebucheintrag','gb_tagebucheintrag','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.Grundstuecksart','grundstuecksart','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung.Datasetname','datasetname','controlling_vollzugsmeldung',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.Delta','delta','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.NBIdent','nbident','controlling_av2gb_mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.EndeTechnBereit','endetechnbereit','controlling_av2gb_mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.Grundbucheintrag','grundbucheintrag','controlling_av2gb_mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('GeometryCHLV95_V1.SurfaceStructure.Surface','surface','surfacestructure',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.GB_Tagebuchbeleg','gb_tagebuchbeleg','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.IstProjektmutation','istprojektmutation','controlling_av2gb_mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.Meldungen','meldungen','controlling_av2gb_mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.Perimeter','perimeter','controlling_av2gb_mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung.Tagebucheintrag','tagebucheintrag','controlling_vollzugsmeldung',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.AV_GueltigerEintrag','av_gueltigereintrag','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.AV_Beschreibung','av_beschreibung','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung.Grundbucheintrag','grundbucheintrag','controlling_vollzugsmeldung',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.NBIdent','nbident','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.Beschrieb','beschrieb','controlling_av2gb_mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.GB_Bemerkungen','gb_bemerkungen','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung.Status','astatus','controlling_vollzugsmeldung',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung.Bemerkungen','bemerkungen','controlling_vollzugsmeldung',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.Datasetname','datasetname','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung.Tagebuchbeleg','tagebuchbeleg','controlling_vollzugsmeldung',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.Perimeter','perimeter','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.AV_GBEintrag','av_gbeintrag','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung.NBIdent','nbident','controlling_vollzugsmeldung',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.Mutationsnummer','mutationsnummer','controlling_av2gb_mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.Mutationsnummer','mutationsnummer','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.Dateinameplan','dateinameplan','controlling_av2gb_mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.GB_Grundbucheintrag','gb_grundbucheintrag','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung.Nummer','nummer','controlling_vollzugsmeldung',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.AV_Gueltigkeit','av_gueltigkeit','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.AV_Firma','av_firma','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_ATTRNAME (IliName,SqlName,ColOwner,Target) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.GB_Status','gb_status','controlling_gb2av_vollzugsmeldung_delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TRAFO (iliname,tag,setting) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta.Perimeter','ch.ehi.ili2db.multiSurfaceTrafo','coalesce');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TRAFO (iliname,tag,setting) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.Meldungen','ch.ehi.ili2db.jsonTrafo','coalesce');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TRAFO (iliname,tag,setting) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung','ch.ehi.ili2db.inheritance','newClass');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TRAFO (iliname,tag,setting) VALUES ('GeometryCHLV95_V1.MultiSurface','ch.ehi.ili2db.inheritance','newClass');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TRAFO (iliname,tag,setting) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.Perimeter','ch.ehi.ili2db.multiSurfaceTrafo','coalesce');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TRAFO (iliname,tag,setting) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen','ch.ehi.ili2db.inheritance','newClass');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TRAFO (iliname,tag,setting) VALUES ('GeometryCHLV95_V1.SurfaceStructure','ch.ehi.ili2db.inheritance','newClass');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TRAFO (iliname,tag,setting) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta','ch.ehi.ili2db.inheritance','newClass');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_INHERITANCE (thisClass,baseClass) VALUES ('GeometryCHLV95_V1.MultiSurface',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_INHERITANCE (thisClass,baseClass) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_INHERITANCE (thisClass,baseClass) VALUES ('GeometryCHLV95_V1.SurfaceStructure',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_INHERITANCE (thisClass,baseClass) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_INHERITANCE (thisClass,baseClass) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.GB2AV_Vollzugsmeldung_Delta',NULL);
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('surfacestructure',NULL,'surface','ch.ehi.ili2db.coordDimension','2');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('surfacestructure',NULL,'surface','ch.ehi.ili2db.c1Max','2870000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('surfacestructure',NULL,'surface','ch.ehi.ili2db.c2Max','1310000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('surfacestructure',NULL,'surface','ch.ehi.ili2db.geomType','POLYGON');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('surfacestructure',NULL,'surface','ch.ehi.ili2db.c1Min','2460000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('surfacestructure',NULL,'surface','ch.ehi.ili2db.c2Min','1045000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('surfacestructure',NULL,'surface','ch.ehi.ili2db.srid','2056');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta',NULL,'perimeter','ch.ehi.ili2db.coordDimension','2');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta',NULL,'perimeter','ch.ehi.ili2db.c1Max','2870000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta',NULL,'perimeter','ch.ehi.ili2db.c2Max','1310000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta',NULL,'perimeter','ch.ehi.ili2db.geomType','MULTIPOLYGON');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta',NULL,'perimeter','ch.ehi.ili2db.c1Min','2460000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta',NULL,'perimeter','ch.ehi.ili2db.c2Min','1045000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta',NULL,'perimeter','ch.ehi.ili2db.srid','2056');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_av2gb_mutationen',NULL,'perimeter','ch.ehi.ili2db.coordDimension','2');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_av2gb_mutationen',NULL,'perimeter','ch.ehi.ili2db.c1Max','2870000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_av2gb_mutationen',NULL,'perimeter','ch.ehi.ili2db.c2Max','1310000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_av2gb_mutationen',NULL,'perimeter','ch.ehi.ili2db.geomType','MULTIPOLYGON');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_av2gb_mutationen',NULL,'perimeter','ch.ehi.ili2db.c1Min','2460000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_av2gb_mutationen',NULL,'perimeter','ch.ehi.ili2db.c2Min','1045000.000');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_av2gb_mutationen',NULL,'perimeter','ch.ehi.ili2db.srid','2056');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('surfacestructure',NULL,'multisurface_surfaces','ch.ehi.ili2db.foreignKey','multisurface');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta',NULL,'gb_bemerkungen','ch.ehi.ili2db.textKind','MTEXT');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_COLUMN_PROP (tablename,subtype,columnname,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta',NULL,'gb_tagebuchbeleg','ch.ehi.ili2db.textKind','MTEXT');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TABLE_PROP (tablename,tag,setting) VALUES ('controlling_av2gb_mutationen','ch.ehi.ili2db.tableKind','CLASS');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TABLE_PROP (tablename,tag,setting) VALUES ('multisurface','ch.ehi.ili2db.tableKind','STRUCTURE');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TABLE_PROP (tablename,tag,setting) VALUES ('controlling_vollzugsmeldung','ch.ehi.ili2db.tableKind','STRUCTURE');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TABLE_PROP (tablename,tag,setting) VALUES ('surfacestructure','ch.ehi.ili2db.tableKind','STRUCTURE');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_TABLE_PROP (tablename,tag,setting) VALUES ('controlling_gb2av_vollzugsmeldung_delta','ch.ehi.ili2db.tableKind','CLASS');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_MODEL (filename,iliversion,modelName,content,importDate) VALUES ('CHBase_Part4_ADMINISTRATIVEUNITS_20110830.ili','2.3','CHAdminCodes_V1 AdministrativeUnits_V1{ CHAdminCodes_V1 InternationalCodes_V1 Dictionaries_V1 Localisation_V1 INTERLIS} AdministrativeUnitsCH_V1{ CHAdminCodes_V1 InternationalCodes_V1 LocalisationCH_V1 AdministrativeUnits_V1 INTERLIS}','/* ########################################################################
    CHBASE - BASE MODULES OF THE SWISS FEDERATION FOR MINIMAL GEODATA MODELS
    ======
@@ -354,7 +493,7 @@ MODEL AdministrativeUnitsCH_V1 (en)
 END AdministrativeUnitsCH_V1.
 
 !! ########################################################################
-','2020-10-02 11:55:26.259');
+','2020-10-07 11:33:43.905');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_MODEL (filename,iliversion,modelName,content,importDate) VALUES ('SO_AGI_GB2AV_Controlling_20201002.ili','2.3','SO_AGI_GB2AV_Controlling_20201002{ GeometryCHLV95_V1 CHAdminCodes_V1}','INTERLIS 2.3;
 
 /** !!------------------------------------------------------------------------------
@@ -375,7 +514,7 @@ VERSION "2020-10-01"  =
 
     /** Berechnung der Differenz (Delta) zwischen Vollzug einer Mutation im Grundbuch und Nachführung in den Daten der amtlichen Vermessung.
      */
-    CLASS Vollzugsmeldung_GBAV_Delta =
+    CLASS GB2AV_Vollzugsmeldung_Delta =
       /** Mutationsnummer
        */
       Mutationsnummer : MANDATORY TEXT*255;
@@ -409,18 +548,89 @@ VERSION "2020-10-01"  =
       /** Datum des Eintrags der vollzogenen Mutation in den Daten der amtlichen Vermessung
        */
       AV_GueltigerEintrag : INTERLIS.XMLDate;
+      /** Datum des Grundbucheintrags in den Daten der amtlichen Vermessung
+       */
+      AV_GBEintrag : INTERLIS.XMLDate;
       /** Zuständiger Nachführungsgeometer (resp. Firma)
        */
       AV_Firma : TEXT*255;
       /** Name des ursprünglichen Datasets der Vollzugsmeldung.
        */
       Datasetname : MANDATORY TEXT*1024;
-    END Vollzugsmeldung_GBAV_Delta;
+      /** Geometrien der betroffen Grundstücke (als Multipolygon)
+       */
+      Perimeter : GeometryCHLV95_V1.MultiSurface;
+      /** Art des Grundstückes
+       */
+      Grundstuecksart : MANDATORY TEXT*255;
+      UNIQUE Datasetname,Grundstuecksart;
+    END GB2AV_Vollzugsmeldung_Delta;
+
+    /** Meldung des Grundbuchs an die amtliche Vermessung
+     */
+    STRUCTURE Vollzugsmeldung =
+      /** Mutationsnummer
+       */
+      Nummer : MANDATORY TEXT*255;
+      /** Nummerierungsbereich
+       */
+      NBIdent : MANDATORY TEXT*255;
+      /** Status der Mutation im Grundbuch
+       */
+      Status : TEXT*255;
+      /** Bemerkungen zu der Mutation
+       */
+      Bemerkungen : TEXT*1024;
+      /** Datum des Eintrags im Grundbuch
+       */
+      Grundbucheintrag : INTERLIS.XMLDate;
+      /** Datum des Eintrags im Tagebuch
+       */
+      Tagebucheintrag : INTERLIS.XMLDate;
+      /** Tagebuchbelegsnummer
+       */
+      Tagebuchbeleg : TEXT*255;
+      /** Name des Datasets
+       */
+      Datasetname : MANDATORY TEXT*1024;
+    END Vollzugsmeldung;
+
+    /** Mutationen der amtlichen Vermessung ans Grundbuch inkl. Vollzugsmeldungen
+     */
+    CLASS AV2GB_Mutationen =
+      /** Mutationsnummer
+       */
+      Mutationsnummer : MANDATORY TEXT*255;
+      /** Nummerierungsbereich
+       */
+      NBIdent : MANDATORY TEXT*255;
+      /** Beschrieb der Mutation
+       */
+      Beschrieb : TEXT*1024;
+      /** Name des mitgeschickten PDF
+       */
+      Dateinameplan : TEXT*1024;
+      /** Datum der technischen Fertigstellung der Mutation
+       */
+      EndeTechnBereit : INTERLIS.XMLDate;
+      !!@ ili2db.mapping="JSON"
+      Meldungen : BAG {0..*} OF SO_AGI_GB2AV_Controlling_20201002.Controlling.Vollzugsmeldung;
+      /** Ist Mutation im Grundbuch eingetragen (vollzogen)?
+       */
+      Grundbucheintrag : BOOLEAN;
+      /** Perimeter der Mutation
+       */
+      Perimeter : GeometryCHLV95_V1.MultiSurface;
+      /** Typ der Mutation
+       */
+      IstProjektmutation : MANDATORY TEXT*255;
+      UNIQUE Dateinameplan;
+    END AV2GB_Mutationen;
 
   END Controlling;
 
 END SO_AGI_GB2AV_Controlling_20201002.
-','2020-10-02 11:55:26.259');
+','2020-10-07 11:33:43.905');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_MODEL (filename,iliversion,modelName,content,importDate) VALUES ('Units-20120220.ili','2.3','Units','!! File Units.ili Release 2012-02-20
 
 INTERLIS 2.3;
@@ -518,7 +728,7 @@ CONTRACTED TYPE MODEL Units (en) AT "http://www.interlis.ch/models"
 
 END Units.
 
-','2020-10-02 11:55:26.259');
+','2020-10-07 11:33:43.905');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_MODEL (filename,iliversion,modelName,content,importDate) VALUES ('CoordSys-20151124.ili','2.3','CoordSys','!! File CoordSys.ili Release 2015-11-24
 
 INTERLIS 2.3;
@@ -733,7 +943,7 @@ REFSYSTEM MODEL CoordSys (en) AT "http://www.interlis.ch/models"
 
 END CoordSys.
 
-','2020-10-02 11:55:26.259');
+','2020-10-07 11:33:43.905');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_MODEL (filename,iliversion,modelName,content,importDate) VALUES ('CHBase_Part2_LOCALISATION_20110830.ili','2.3','InternationalCodes_V1 Localisation_V1{ InternationalCodes_V1} LocalisationCH_V1{ InternationalCodes_V1 Localisation_V1} Dictionaries_V1{ InternationalCodes_V1} DictionariesCH_V1{ InternationalCodes_V1 Dictionaries_V1}','/* ########################################################################
    CHBASE - BASE MODULES OF THE SWISS FEDERATION FOR MINIMAL GEODATA MODELS
    ======
@@ -905,7 +1115,7 @@ MODEL DictionariesCH_V1 (en)
 END DictionariesCH_V1.
 
 !! ########################################################################
-','2020-10-02 11:55:26.259');
+','2020-10-07 11:33:43.905');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_MODEL (filename,iliversion,modelName,content,importDate) VALUES ('CHBase_Part1_GEOMETRY_20110830.ili','2.3','GeometryCHLV03_V1{ CoordSys Units INTERLIS} GeometryCHLV95_V1{ CoordSys Units INTERLIS}','/* ########################################################################
    CHBASE - BASE MODULES OF THE SWISS FEDERATION FOR MINIMAL GEODATA MODELS
    ======
@@ -1083,7 +1293,7 @@ TYPE MODEL GeometryCHLV95_V1 (en)
 END GeometryCHLV95_V1.
 
 !! ########################################################################
-','2020-10-02 11:55:26.259');
+','2020-10-07 11:33:43.905');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.createMetaInfo','True');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.beautifyEnumDispName','underscore');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.arrayTrafo','coalesce');
@@ -1111,6 +1321,7 @@ INSERT INTO agi_gb2av_controlling.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.eh
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_SETTINGS (tag,setting) VALUES ('ch.ehi.ili2db.multilingualTrafo','expand');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_META_ATTRS (ilielement,attr_name,attr_value) VALUES ('DictionariesCH_V1','furtherInformation','http://www.geo.admin.ch/internet/geoportal/de/home/topics/geobasedata/models.html');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_META_ATTRS (ilielement,attr_name,attr_value) VALUES ('DictionariesCH_V1','technicalContact','models@geo.admin.ch');
+INSERT INTO agi_gb2av_controlling.T_ILI2DB_META_ATTRS (ilielement,attr_name,attr_value) VALUES ('SO_AGI_GB2AV_Controlling_20201002.Controlling.AV2GB_Mutationen.Meldungen','ili2db.mapping','JSON');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_META_ATTRS (ilielement,attr_name,attr_value) VALUES ('Dictionaries_V1','furtherInformation','http://www.geo.admin.ch/internet/geoportal/de/home/topics/geobasedata/models.html');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_META_ATTRS (ilielement,attr_name,attr_value) VALUES ('Dictionaries_V1','technicalContact','models@geo.admin.ch');
 INSERT INTO agi_gb2av_controlling.T_ILI2DB_META_ATTRS (ilielement,attr_name,attr_value) VALUES ('SO_AGI_GB2AV_Controlling_20201002','furtherInformation','http://geo.so.ch/models/AGI/SO_AGI_GB2AV_Controlling_20201002.uml');

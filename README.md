@@ -3,10 +3,20 @@
 # gb2av-web-service
 
 ## TODO
-- Validierung Update `grundbucheintrag` in `controlling_av2gb_mutationen`
+- Validierung Update `grundbucheintrag LIKE...` in `controlling_av2gb_mutationen`
+- Validierung: Records werden erst INSERTED wenn es Geometrien dazu gibt. Sollte konzeptionell funktionieren. Sie tauchen eventuell einfach später in der Tabelle.
+- Remove CurveToLine etc. in Produktion
 - Vollzugsmeldunge: GBEintrag aus AV (damit man sieht, ob es noch ändert), Geometrie?
+- Gretljob "controlling", damit es parallel laufen kann (in test):
+  * UPSERT für Vollzugsmeldungen: zwei UPSERTS (wegen Geometrie und Delta)
+  * UPSERT für AV-Mutationen
+- Layer in Web GIS Client erfassen
 - Aufräumen 
 - Doku nachführen 
+
+
+
+
 
 ## Beschreibung
 Importiert die Vollzugsmeldungen des Grundbuches an die Nachführungsgeometer in die Edit-Datenbank. Die Vollzugsmeldungen (INTERLIS-Dateien) werden vom Infogrips-FTP heruntergeladen, auf AWS-S3 archiviert und anschliessend importiert.
@@ -50,6 +60,8 @@ sogis/gb2av
 ```
 
 ### SQL (ili2pg)
+
+#### agi_gb2av
 ```
 ILI2PG_PATH=/Users/stefan/apps/ili2pg-4.3.1/ili2pg-4.3.1.jar  
 java -jar ${ILI2PG_PATH} \
@@ -60,6 +72,19 @@ java -jar ${ILI2PG_PATH} \
 ```
 
 Die Dateien `agi_gb2av.sql`, `prescript.sql` und `postscript.sql` liegen im Ordner `sql`. **ACHTUNG:** Die für die GDI verwendeteten Dateien liegen im Ordner `G:\sogis\daten_tools\skripte\db_schema_definition_edit\agi_gb2av`.
+
+#### agi_gb2av_controlling
+````
+ILI2PG_PATH=/Users/stefan/apps/ili2pg-4.3.1/ili2pg-4.3.1.jar  
+java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
+--dbschema agi_gb2av_controlling --models SO_AGI_GB2AV_Controlling_20201002 \
+--defaultSrsCode 2056 --createGeomIdx --createFk --createFkIdx --createUnique --createEnumTabs --beautifyEnumDispName --createMetaInfo --createNumChecks --nameByTopic --strokeArcs \
+--coalesceJson \
+--modeldir ".;http://models.geo.admin.ch" \
+--createscript agi_gb2av_controlling.sql
+````
+
+
 
 ### AWS-S3
 Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der Grupps ist die Policy `gb2av-S3` zugewiesen:
@@ -88,10 +113,7 @@ Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der 
             "Resource": [
                 "arn:aws:s3:::ch.so.agi.av.gb2av-dev/*",
                 "arn:aws:s3:::ch.so.agi.av.gb2av-test/*",
-                "arn:aws:s3:::ch.so.agi.av.gb2av/*",
-                "arn:aws:s3:::ch.so.agi.av.av2gb-dev/*",
-                "arn:aws:s3:::ch.so.agi.av.av2gb-test/*",
-                "arn:aws:s3:::ch.so.agi.av.av2gb/*"
+                "arn:aws:s3:::ch.so.agi.av.gb2av/*"
             ]
         },
         {
@@ -107,13 +129,7 @@ Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der 
                 "arn:aws:s3:::ch.so.agi.av.gb2av-test",
                 "arn:aws:s3:::ch.so.agi.av.gb2av-test/*",
                 "arn:aws:s3:::ch.so.agi.av.gb2av",
-                "arn:aws:s3:::ch.so.agi.av.gb2av/*",
-                "arn:aws:s3:::ch.so.agi.av.av2gb-dev",
-                "arn:aws:s3:::ch.so.agi.av.av2gb-dev/*",
-                "arn:aws:s3:::ch.so.agi.av.av2gb-test",
-                "arn:aws:s3:::ch.so.agi.av.av2gb-test/*",
-                "arn:aws:s3:::ch.so.agi.av.av2gb",
-                "arn:aws:s3:::ch.so.agi.av.av2gb/*"
+                "arn:aws:s3:::ch.so.agi.av.gb2av/*"
             ]
         },
         {
@@ -205,13 +221,34 @@ java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
 --createscript agi_gb2av_controlling.sql
 ```
 
-Mit dbeaver Daten minimal umbauen und dann als INSERT-Befehle exportieren.
+Mit dbeaver Daten minimal umbauen und dann als INSERT-Befehle exportieren:
+
+```
+SELECT 
+    mutationsnummer,
+    nbident,
+    delta,
+    gb_status,
+    gb_bemerkungen,
+    gb_grundbucheintrag
+    gb_tagebucheintrag,
+    gb_tagebuchbeleg,
+    av_beschreibung,
+    av_gueltigkeit,
+    av_gueltigereintrag,
+    av_firma,
+    t_datasetname AS datasetname,
+    '-' AS grundstuecksart
+FROM 
+    agi_gb2av.vollzugsmeldung_av_delta
+;
+```
 
 ```
 java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
 --dbhost localhost --dbport 54321 --dbdatabase edit --dbusr admin --dbpwd admin \
 --dbschema agi_gb2av_controlling --models SO_AGI_GB2AV_Controlling_20201002 \
---modeldir "../model/;http://models.geo.admin.ch" \
+--modeldir "./model/;http://models.geo.admin.ch" \
 --export agi_gb2av_controlling_export.xtf
 ```
 

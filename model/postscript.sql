@@ -1,7 +1,7 @@
 COMMENT ON SCHEMA
    agi_gb2av_controlling
 IS
-   'Dieses Schema wird vom AWJF für die Publikation der Biotopbäume verwendet. Fragen: peter.senn@bd.so.ch, samuel.scheibler@vd.so.ch'
+   'Dieses Schema wird für Controlling-Tabellen der amtlichen Vermessung und des Grundbuches verwendet. Fragen: stefan.ziegler@bd.so.ch'
 ;
 GRANT USAGE ON SCHEMA agi_gb2av_controlling TO public, ogc_server, sogis_service, gretl
 ;
