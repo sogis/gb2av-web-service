@@ -109,6 +109,7 @@ Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der 
             "Resource": [
                 "arn:aws:s3:::ch.so.agi.av.gb2av-dev/*",
                 "arn:aws:s3:::ch.so.agi.av.gb2av-test/*",
+                "arn:aws:s3:::ch.so.agi.av.gb2av-int/*",
                 "arn:aws:s3:::ch.so.agi.av.gb2av/*"
             ]
         },
@@ -124,6 +125,8 @@ Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der 
                 "arn:aws:s3:::ch.so.agi.av.gb2av-dev/*",
                 "arn:aws:s3:::ch.so.agi.av.gb2av-test",
                 "arn:aws:s3:::ch.so.agi.av.gb2av-test/*",
+                "arn:aws:s3:::ch.so.agi.av.gb2av-int",
+                "arn:aws:s3:::ch.so.agi.av.gb2av-int/*",
                 "arn:aws:s3:::ch.so.agi.av.gb2av",
                 "arn:aws:s3:::ch.so.agi.av.gb2av/*"
             ]
