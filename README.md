@@ -10,7 +10,7 @@
 - Aufräumen 
 - Doku nachführen 
   * GRETL-Job nachführen
-
+  * ...
 
 ## Beschreibung
 Importiert die AV-Mutationen vom Nachführungsgeometer an das Grundbuch und die Vollzugsmeldungen des Grundbuches an die Nachführungsgeometer in die Edit-Datenbank. Die INTERLIS-Dateien werden vom Infogrips-FTP heruntergeladen, auf AWS-S3 archiviert und anschliessend importiert. Da die AV-Mutationen nur sehr kurz auf dem FTP-Server liegen, wird alle 10 Sekunden geprüft, ob neue Mutationen vorliegen. Es ist aber nicht klar, ob so wirklich alle Mutationen behandelt werden können. Die Vollzugsmeldungen werden nicht gelöscht und sind langfristig verfügbar.
