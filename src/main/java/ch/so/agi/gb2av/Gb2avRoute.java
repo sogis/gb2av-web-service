@@ -93,7 +93,7 @@ public class Gb2avRoute extends RouteBuilder {
         .end();   
         
         // Download Mutationstabellen from Infogrips FTP.
-        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\av2gb\\?password="+ftpPwdInfogrips+"&antInclude=*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelayAv2Gb+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ftp-${file:name}")
+        from("ftp://"+ftpUserInfogrips+"@"+ftpUrlInfogrips+"/\\av2gb\\?password="+ftpPwdInfogrips+"&antInclude=*.zip&autoCreate=false&noop=true&readLock=changed&stepwise=false&separator=Windows&passiveMode=true&binary=true&delay="+downloadDelayAv2Gb+"&initialDelay="+initialDownloadDelay+"&idempotentRepository=#jdbcConsumerRepo&idempotentKey=ftp-${file:name}-${file:size}-${file:modified}")
         .routeId("*downloadMutationstabelle*")
         .to("file://"+pathToDownloadFolder)
         .split(new ZipSplitter())

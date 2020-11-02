@@ -9,7 +9,7 @@
 - Layer in Web GIS Client erfassen
 - Aufräumen 
 - Doku nachführen 
-  * GRETL-Job nachführen
+  * GRETL-Job nachführen resp. alter GRETL-Job (`agi_gb2av`) löschen.
   * ...
 
 ## Beschreibung
@@ -19,7 +19,7 @@ Umgesetzt ist der Prozess als Apache Camel Pipeline, die in Spring Boot läuft.
 
 Es steht ein RSS-Feed für die Vollzugsmeldungen zur Verfügung. Dieser kann z.B. in Outlook importiert werden damit man bei einer neuen Vollzugsmeldung benachrichtigt wird. Es werden jeweils die 100 aktuellsten Vollzugsmeldungen im RSS-Feed publiziert. Sie werden nicht nach NF-Geometer o.ä. gefiltert.
 
-Siehe GRETL-Jobs für Informationen über die Auswertungen etc.
+Siehe GRETL-Job [agi_gb2av_controlling](https://github.com/sogis/gretljobs/tree/master/agi_gb2av_controlling) für Informationen über die Auswertungen etc.
 
 ## Betriebsdokumentation
 Bei jedem Git-Push wird mittels Travis das Docker-Image neu gebuildet und als `sogis/gb2av` mit den Tags `latest` und "Travis-Buildnummer" auf Docker Hub abgelegt. Auf der AGI-Testumgebung wird viertelstündlich das `latest`-Image deployed.
@@ -38,7 +38,7 @@ Zusätzlich müssen ENV-Variablen für Logins gesetzt werden und die korrekte Ti
 - TZ  = Europe/Amsterdam
 
 ### Persistenz
-Apache Camel verwendet sogenannte Idempotent-Repositories. In diesen Repositories wird gespeichert, welche Nachricht in welchem Prozess / in welcher Route bereits behandelt wurde. Dazu muss eine Tabelle in der Datenbank angelegt werden. Der benötigte DDL-Befehl ist im `postscript.sql` gespeichert.
+Apache Camel verwendet sogenannte Idempotent-Repositories. In diesen Repositories wird gespeichert, welche Nachricht in welchem Prozess / in welcher Route bereits behandelt wurde. Dazu muss eine Tabelle in der Datenbank angelegt werden. Der benötigte DDL-Befehl ist im `postscript.sql` gespeichert. Das verwendete JDBC-Idempotent-Repository ist nicht besonders performant: Bei sehr vielen Dateien auf dem FTP-Server macht er vor jedem Pull für jede einzelne Datei ein `SELECT`, was früher oder später lange dauern kann.
 
 ### Zusätzliche DB-Tabelle(n)
 Entgegen der Gepflogenheit, dass alle DB-Tabellen mit INTERLIS modelliert werden müssen, gibt es eine Auswertungstabelle, die "manuell" angelegt wird. Ebenfalls wie bei der Tabelle für das Idempotent-Repository steht das DDL in der `postscript.sql` Datei. Zu einem späteren Zeitpunkt soll diese Auswertungstabelle in einem INTERLIS-Modell für die sogenannten Fileverifikation aufgehen.
