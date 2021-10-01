@@ -3,7 +3,6 @@
 # gb2av-web-service
 
 ## TODO
-- Foo
 - Validierung Update `grundbucheintrag LIKE...` in `controlling_av2gb_mutationen`
 - Validierung: Records werden erst INSERTED wenn es Geometrien dazu gibt. Sollte konzeptionell funktionieren. Sie tauchen eventuell einfach später in der Tabelle.
 - Remove CurveToLine etc. in GDI (da AV ohne Kreisbogen)
