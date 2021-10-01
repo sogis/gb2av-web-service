@@ -3,6 +3,7 @@
 # gb2av-web-service
 
 ## TODO
+- Foo
 - Validierung Update `grundbucheintrag LIKE...` in `controlling_av2gb_mutationen`
 - Validierung: Records werden erst INSERTED wenn es Geometrien dazu gibt. Sollte konzeptionell funktionieren. Sie tauchen eventuell einfach später in der Tabelle.
 - Remove CurveToLine etc. in GDI (da AV ohne Kreisbogen)
@@ -259,4 +260,6 @@ java -jar /usr/local/ili2pg-4.3.1/ili2pg.jar \
 --modeldir "../model/;http://models.geo.admin.ch" \
 --import agi_gb2av_controlling_export.xtf
 ```
+
+
 
