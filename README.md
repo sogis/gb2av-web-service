@@ -30,8 +30,8 @@ Die Datenbankverbindungsparameter (ohne Benutzer und Passwort) werden über Spri
 
 Zusätzlich müssen ENV-Variablen für Logins gesetzt werden und die korrekte Timezone:
 
-- awsAccessKey
-- awsSecretKey
+- AWS_ACCESS_KEY_ID
+- AWS_SECRET_ACCESS_KEY
 - ftpUserInfogrips
 - ftpPwdInfogrips
 - dbUser
@@ -48,8 +48,8 @@ Entgegen der Gepflogenheit, dass alle DB-Tabellen mit INTERLIS modelliert werden
 ```
 docker run --restart always -p 8080:8080 \
 -e "SPRING_PROFILES_ACTIVE=dev" \
--e "awsAccessKey=XXXXXX" \
--e "awsSecretKey=XXXXXX" \
+-e "AWS_ACCESS_KEY_ID=XXXXXX" \
+-e "AWS_SECRET_ACCESS_KEY=XXXXXX" \
 -e "ftpUserInfogrips=XXXXXX" \
 -e "ftpPwdInfogrips=XXXXXX" \
 -e "dbUserEdit=XXXXXX" \
@@ -192,7 +192,7 @@ Weil es noch keine wirklichen Tests gibt, wurde der contextLoads-Test auskomment
 ### JVM
 
 ```
-
+./gradlew clean build
 ```
 
 ### Native
@@ -204,8 +204,10 @@ Achtung: Während der Benutzung des Agents muss eine Datenbank vorhanden sein un
 
 java -DspringAot=true -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar build/libs/gb2av-1.2.LOCALBUILD-exec.jar
 
-
+./gradlew clean nativeCompile -i
 ```
+
+Funktioniert noch nicht: https://github.com/oracle/graal/issues/4630.
 
 
 ## Lokale adhoc Auswertung

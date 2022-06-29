@@ -36,12 +36,6 @@ public class Gb2avRoute extends RouteBuilder {
     @Value("${app.pathToErrorFolder}")
     private String pathToErrorFolder;
     
-    @Value("${app.awsAccessKey}")
-    private String awsAccessKey;
-
-    @Value("${app.awsSecretKey}")
-    private String awsSecretKey;
-    
     @Value("${app.awsBucketName}")
     private String awsBucketName;
 

@@ -22,7 +22,7 @@ bootJar {
 }
 
 ext {
-    apacheCamelVersion = "3.17.0"
+    apacheCamelVersion = "3.14.3"  // LTS
 }
 
 configurations {
@@ -30,10 +30,11 @@ configurations {
     runtimeClasspath {
         extendsFrom developmentOnly
     }
+    /*
     implementation {
         exclude(group: 'com.fasterxml.jackson.core', module: 'jackson-databind')
     }
-    
+    */   
 }
 
 configurations.all {
@@ -48,16 +49,22 @@ repositories {
 }
 
 dependencies {
-    //implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation ('org.springframework.boot:spring-boot-starter-web') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+        //exclude group: 'org.apache.tomcat.embed', module: 'tomcat-embed-core'
+        exclude group: 'org.apache.tomcat.embed', module: 'tomcat-embed-websocket'
     }
     implementation 'org.springframework.boot:spring-boot-starter-undertow'
+    //implementation 'org.apache.tomcat.experimental:tomcat-embed-programmatic'
+    
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'	
     
     implementation platform("org.apache.camel.springboot:camel-spring-boot-bom:${apacheCamelVersion}")
     implementation "org.apache.camel.springboot:camel-spring-boot-starter"
-    implementation "org.apache.camel.springboot:camel-stream-starter"
+    //implementation "org.apache.camel.springboot:camel-stream-starter"
+    //implementation 'org.apache.camel.springboot:camel-servlet-starter'
+    //implementation 'org.apache.camel.springboot:camel-jackson-starter'
     
     implementation "org.apache.camel:camel-ftp:${apacheCamelVersion}"	
     implementation "org.apache.camel:camel-zipfile:${apacheCamelVersion}"
@@ -66,11 +73,11 @@ dependencies {
     implementation "ch.interlis:ili2pg:4.3.1"    
     implementation "ch.interlis:ilivalidator:1.11.3"
     implementation "ch.ehi:ehibasics:1.2.0"
-    implementation 'com.rometools:rome:1.12.0'    
+    implementation 'com.rometools:rome:1.18.0'    
 
-    implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
-    implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'   
+    //implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    //implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+    //implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'   
 
     runtimeOnly 'org.postgresql:postgresql'
 

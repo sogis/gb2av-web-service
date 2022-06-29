@@ -5,9 +5,6 @@
       "pattern":"\\QMETA-INF/maven/org.apache.camel/camel-base-engine/pom.properties\\E"
     }, 
     {
-      "pattern":"\\QMETA-INF/maven/org.apache.camel/camel-main/pom.properties\\E"
-    }, 
-    {
       "pattern":"\\QMETA-INF/services/io.undertow.servlet.ServletExtension\\E"
     }, 
     {
@@ -65,7 +62,16 @@
       "pattern":"\\QMETA-INF/services/org/apache/camel/configurer/spring-event-endpoint\\E"
     }, 
     {
+      "pattern":"\\QMETA-INF/services/org/apache/camel/health-check/consumers-repository\\E"
+    }, 
+    {
+      "pattern":"\\QMETA-INF/services/org/apache/camel/health-check/context-check\\E"
+    }, 
+    {
       "pattern":"\\QMETA-INF/services/org/apache/camel/health-check/default-registry\\E"
+    }, 
+    {
+      "pattern":"\\QMETA-INF/services/org/apache/camel/health-check/routes-repository\\E"
     }, 
     {
       "pattern":"\\QMETA-INF/services/org/apache/camel/internal-processor-factory\\E"
@@ -83,16 +89,22 @@
       "pattern":"\\QMETA-INF/services/org/apache/camel/processor-factory\\E"
     }, 
     {
-      "pattern":"\\QMETA-INF/services/org/apache/camel/routes-loader\\E"
+      "pattern":"\\QMETA-INF/services/software.amazon.awssdk.http.SdkHttpService\\E"
     }, 
     {
-      "pattern":"\\QMETA-INF/services/software.amazon.awssdk.http.SdkHttpService\\E"
+      "pattern":"\\QMETA-INF/spring.components\\E"
     }, 
     {
       "pattern":"\\Qapplication-dev.properties\\E"
     }, 
     {
       "pattern":"\\Qapplication.properties\\E"
+    }, 
+    {
+      "pattern":"\\Qch/so/agi/gb2av/\\E"
+    }, 
+    {
+      "pattern":"\\Qcom/rometools/rome/rome.properties\\E"
     }, 
     {
       "pattern":"\\Qio/undertow/version.properties\\E"

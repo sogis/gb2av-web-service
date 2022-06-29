@@ -12,7 +12,16 @@
     "interfaces":["java.sql.Connection"]}
   ,
   {
+    "interfaces":["org.apache.http.conn.ConnectionRequest","software.amazon.awssdk.http.apache.internal.conn.Wrapped"]}
+  ,
+  {
+    "interfaces":["org.apache.http.conn.HttpClientConnectionManager","org.apache.http.pool.ConnPoolControl","software.amazon.awssdk.http.apache.internal.conn.Wrapped"]}
+  ,
+  {
     "interfaces":["org.springframework.beans.factory.annotation.Qualifier","org.springframework.core.annotation.SynthesizedAnnotation"]}
+  ,
+  {
+    "interfaces":["org.springframework.boot.actuate.endpoint.annotation.EndpointExtension","org.springframework.core.annotation.SynthesizedAnnotation"]}
   ,
   {
     "interfaces":["org.springframework.boot.context.properties.ConfigurationProperties","org.springframework.core.annotation.SynthesizedAnnotation"]}
