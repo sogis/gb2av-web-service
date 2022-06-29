@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/sogis/gb2av-web-service.svg?branch=master)](https://travis-ci.org/sogis/gb2av-web-service)
+[![CI/CD](https://github.com/sogis/gb2av-web-service/actions/workflows/main.yml/badge.svg)](https://github.com/sogis/gb2av-web-service/actions/workflows/main.yml)
 
 # gb2av-web-service
 
