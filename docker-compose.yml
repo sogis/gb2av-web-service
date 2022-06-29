@@ -1,24 +1,16 @@
 version: '3'
 services:
   edit-db:
-    hostname: primary  
-    image: sogis/oereb-db
+    image: sogis/oereb-db:2
     environment:
-      PG_DATABASE: edit
-      PG_LOCALE: de_CH.UTF-8
-      PG_PRIMARY_PORT: 5432
-      PG_MODE: primary
-      PG_USER: admin
-      PG_PASSWORD: admin
-      PG_PRIMARY_USER: repl
-      PG_PRIMARY_PASSWORD: repl
-      PG_ROOT_PASSWORD: secret
-      PG_WRITE_USER: gretl
-      PG_WRITE_PASSWORD: gretl
-      PG_READ_USER: ogc_server
-      PG_READ_PASSWORD: ogc_server
-    volumes:
-      - ~/pgdata-gb2av:/pgdata:delegated
+      POSTGRES_DB: edit
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_HOST_AUTH_METHOD: md5
+      PG_WRITE_PWD: ddluser
+      PG_READ_PWD: dmluser
+      PG_GRETL_PWD: gretl
+    #volumes:
+     # - ~/pgdata-gb2av:/pgdata:delegated
     networks:
       - gb2av
     ports:
@@ -26,4 +18,3 @@ services:
 networks:
   gb2av:
 
-    

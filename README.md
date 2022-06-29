@@ -1,15 +1,16 @@
-[![Build Status](https://travis-ci.org/sogis/gb2av-web-service.svg?branch=master)](https://travis-ci.org/sogis/gb2av-web-service)
+[![CI/CD](https://github.com/sogis/gb2av-web-service/actions/workflows/main.yml/badge.svg)](https://github.com/sogis/gb2av-web-service/actions/workflows/main.yml)
 
 # gb2av-web-service
 
 ## TODO
+- Tests, Tests, Tests, ...
+- Schema-Job
+- Eigenes Schema für Idempotent-Tabelle? Eigenes Modell? (falls möglich)
 - Validierung Update `grundbucheintrag LIKE...` in `controlling_av2gb_mutationen`
 - Validierung: Records werden erst INSERTED wenn es Geometrien dazu gibt. Sollte konzeptionell funktionieren. Sie tauchen eventuell einfach später in der Tabelle.
 - Remove CurveToLine etc. in GDI (da AV ohne Kreisbogen)
-- Layer in Web GIS Client erfassen
 - Aufräumen 
 - Doku nachführen 
-  * GRETL-Job nachführen resp. alter GRETL-Job (`agi_gb2av`) löschen.
   * ...
 
 ## Beschreibung
@@ -29,8 +30,8 @@ Die Datenbankverbindungsparameter (ohne Benutzer und Passwort) werden über Spri
 
 Zusätzlich müssen ENV-Variablen für Logins gesetzt werden und die korrekte Timezone:
 
-- awsAccessKey
-- awsSecretKey
+- AWS_ACCESS_KEY_ID
+- AWS_SECRET_ACCESS_KEY
 - ftpUserInfogrips
 - ftpPwdInfogrips
 - dbUser
@@ -47,8 +48,8 @@ Entgegen der Gepflogenheit, dass alle DB-Tabellen mit INTERLIS modelliert werden
 ```
 docker run --restart always -p 8080:8080 \
 -e "SPRING_PROFILES_ACTIVE=dev" \
--e "awsAccessKey=XXXXXX" \
--e "awsSecretKey=XXXXXX" \
+-e "AWS_ACCESS_KEY_ID=XXXXXX" \
+-e "AWS_SECRET_ACCESS_KEY=XXXXXX" \
 -e "ftpUserInfogrips=XXXXXX" \
 -e "ftpPwdInfogrips=XXXXXX" \
 -e "dbUserEdit=XXXXXX" \
@@ -144,7 +145,7 @@ Es gibt einen Benutzer `gb2av`, welcher der Gruppe `gb2av-group` gegehört. Der 
 
 Für das Controlling wird der GRETL-Job [https://github.com/sogis/gretljobs/tree/master/agi_gb2av](https://github.com/sogis/gretljobs/tree/master/agi_gb2av) benötigt. Er berechnet täglich die Differenz zwischen dem Grundbucheintrag (=Vollzugsmeldung) und dem heutigen Tag für Objekte der Tabelle `lsnachfuehrung` in der amtlichen Vermessung, die noch keinen Wert im Attribut `gbeintrag` haben. Neue werden hinzugefügt, bereits bestehende upgedatet ("UPSERT").
 
-## Entwicklerdokumentation
+## Developing
 
 Lokale Datenbank mit Docker für den Datenimport:
 ```
@@ -183,6 +184,31 @@ CREATE TABLE
 ;
 ```
 Muss im `postscript.sql` bei der Inbetriebnahme ausgeführt werden.
+
+## Build
+
+Weil es noch keine wirklichen Tests gibt, wurde der contextLoads-Test auskommentiert. "Disabled" reicht nicht, weil dann trotzdem der Server hochgefahren wird und ggf die Konfiguration fehlt (und die DB).
+
+### JVM
+
+```
+./gradlew clean build
+```
+
+### Native
+
+Achtung: Während der Benutzung des Agents muss eine Datenbank vorhanden sein und die ENV-Variablen für den FTP und S3 müssen gesetzt sein. Standard-Spring-Profile ist "dev". Die Camel-Route läuft automatisch, den RSS-Feed muss manuell aufgerufen werden: localhost:8080/gb2av/rss.xml.
+
+```
+./gradlew clean build
+
+java -DspringAot=true -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar build/libs/gb2av-1.2.LOCALBUILD-exec.jar
+
+./gradlew clean nativeCompile -i
+```
+
+Funktioniert noch nicht: https://github.com/oracle/graal/issues/4630.
+
 
 ## Lokale adhoc Auswertung
 

@@ -6,7 +6,7 @@ import javax.sql.DataSource;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.aws.s3.S3Constants;
+import org.apache.camel.component.aws2.s3.AWS2S3Constants;
 import org.apache.camel.dataformat.zipfile.ZipSplitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +35,6 @@ public class Gb2avRoute extends RouteBuilder {
     
     @Value("${app.pathToErrorFolder}")
     private String pathToErrorFolder;
-    
-    @Value("${app.awsAccessKey}")
-    private String awsAccessKey;
-
-    @Value("${app.awsSecretKey}")
-    private String awsSecretKey;
     
     @Value("${app.awsBucketName}")
     private String awsBucketName;
@@ -108,13 +102,15 @@ public class Gb2avRoute extends RouteBuilder {
         from("file://"+pathToUnzipFolder+"/?noop=true&delay="+uploadDelay+"&initialDelay="+initialUploadDelay+"&readLock=changed&idempotentRepository=#jdbcConsumerRepo&idempotentKey=s3-${file:name}")
         .routeId("*uploadS3*")
         .convertBodyTo(byte[].class)
-        .setHeader(S3Constants.CONTENT_LENGTH, simple("${in.header.CamelFileLength}"))
-        .setHeader(S3Constants.KEY,simple("${in.header.CamelFileNameOnly}"))
-        .setHeader(S3Constants.CANNED_ACL,simple("PublicRead")) 
-        .to("aws-s3://" + awsBucketName
-                + "?deleteAfterWrite=false&region=EU_CENTRAL_1" 
-                + "&accessKey={{awsAccessKey}}"
-                + "&secretKey=RAW({{awsSecretKey}})")
+        .setHeader(AWS2S3Constants.CONTENT_LENGTH, simple("${in.header.CamelFileLength}"))
+        .setHeader(AWS2S3Constants.KEY,simple("${in.header.CamelFileNameOnly}"))
+        .setHeader(AWS2S3Constants.ACL,simple("public-read")) 
+        .to("aws2-s3://" + awsBucketName
+                + "?deleteAfterWrite=false&region=eu-central-1" 
+                + "&useDefaultCredentialsProvider=true"
+//                + "&accessKey={{ftpUrlInfogrips}}"
+//                + "&secretKey=RAW({{awsSecretKey}})"
+                )
         .log(LoggingLevel.INFO, "File uploaded: ${in.header.CamelFileNameOnly}");
         
         // Import

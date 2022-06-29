@@ -18,20 +18,20 @@ public class Gb2avJdbcMessageIdRepository extends AbstractJdbcMessageIdRepositor
     private String clearString = "DELETE FROM "+dbSchema+".CAMEL_MESSAGEPROCESSED WHERE processorName = ?";
 
     @Override
-    protected int queryForInt(Object key) {
-        return jdbcTemplate.queryForObject(getQueryString(), Integer.class, processorName, (String) key);
+    protected int queryForInt(String key) {
+        return jdbcTemplate.queryForObject(getQueryString(), Integer.class, processorName, key);
     }
 
     @Override
-    protected int insert(Object key) {
-        return jdbcTemplate.update(getInsertString(), processorName, (String) key, new Timestamp(System.currentTimeMillis()));
+    protected int insert(String key) {
+        return jdbcTemplate.update(getInsertString(), processorName, key, new Timestamp(System.currentTimeMillis()));
     }
 
     @Override
-    protected int delete(Object key) {
-        return jdbcTemplate.update(getDeleteString(), processorName, (String) key);
+    protected int delete(String key) {
+        return jdbcTemplate.update(getDeleteString(), processorName, key);
     }
-
+ 
     @Override
     protected int delete() {
         return jdbcTemplate.update(getClearString(), processorName);
