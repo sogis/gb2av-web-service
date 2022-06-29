@@ -1,18 +1,28 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.2.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id "com.bmuschko.docker-remote-api" version "4.6.2"    	
+    id 'org.springframework.experimental.aot' version '0.12.0'
 }
 
 apply from: "$rootDir/gradle/versioning.gradle"
 
 group = 'ch.so.agi'
-sourceCompatibility = '1.8'
-//targetCompatibility = '1.8'
+description = """ gb2av-web-service """
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+compileJava {
+    options.compilerArgs.addAll(['--release', '11'])
+}
+
+bootJar {
+   archiveName = baseName + "-" + version + "-exec.jar"
+}
 
 ext {
-    apacheCamelVersion = "2.24.2"
+    apacheCamelVersion = "3.17.0"
 }
 
 configurations {
@@ -28,71 +38,59 @@ configurations.all {
 }
 
 repositories {
-    jcenter()
+    maven { url 'https://repo.spring.io/release' }
     mavenCentral()
-    maven { url "http://jars.interlis.ch" }	
+    maven { url "https://jars.interlis.ch" }	
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation ('org.springframework.boot:spring-boot-starter-web') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'	
+    
+    implementation platform("org.apache.camel.springboot:camel-spring-boot-bom:${apacheCamelVersion}")
+    implementation "org.apache.camel.springboot:camel-spring-boot-starter"
+    implementation "org.apache.camel.springboot:camel-stream-starter"
+    
     implementation "org.apache.camel:camel-ftp:${apacheCamelVersion}"	
-    implementation "org.apache.camel:camel-spring-boot-starter:${apacheCamelVersion}"
     implementation "org.apache.camel:camel-zipfile:${apacheCamelVersion}"
-    implementation "org.apache.camel:camel-aws:${apacheCamelVersion}"
+    implementation "org.apache.camel:camel-aws2-s3:${apacheCamelVersion}"
     implementation "org.apache.camel:camel-sql:${apacheCamelVersion}"
     implementation "ch.interlis:ili2pg:4.3.1"    
     implementation "ch.interlis:ilivalidator:1.11.3"
     implementation "ch.ehi:ehibasics:1.2.0"
     implementation 'com.rometools:rome:1.12.0'    
 
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+    implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'   
+
     runtimeOnly 'org.postgresql:postgresql'
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    
-    implementation 'javax.xml.bind:jaxb-api:2.3.0'
-    implementation 'com.sun.xml.bind:jaxb-core:2.3.0'
-    implementation 'com.sun.xml.bind:jaxb-impl:2.3.0'	
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'    
+    testImplementation 'org.apache.camel:camel-test-spring-junit5'
 }
 
-// Build Docker image
-import com.bmuschko.gradle.docker.tasks.image.Dockerfile
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
-
-docker {
-    registryCredentials {
-        username = System.env.DOCKER_USERNAME
-        password = System.env.DOCKER_PASSWORD
-    }
+tasks.named('test') {
+    useJUnitPlatform()
 }
 
-task buildDockerImage(type: DockerBuildImage) {
-    description = "Build docker image."
-    inputDir = project.projectDir
-    tags = ["sogis/gb2av:"+ version, "sogis/gb2av:latest"]
-    labels = ["gb2av.created": new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), 
-            "gb2av.git_commit":  getCheckedOutGitCommitHash(), 
-            "gb2av.travis_build": version]
+springAot {
+    //mode = org.springframework.aot.gradle.dsl.AotMode.NATIVE_AGENT
+    debugVerify = false
+    verify = true
 }
 
-task pushDockerImage_One(type: DockerPushImage) {
-    description = "Push docker image to hub.docker.com (images are UNTESTED)."
-    imageName = buildDockerImage.tags.get().toArray()[0]
-}
-
-task pushDockerImage_Two(type: DockerPushImage) {
-    description = "Push docker image to hub.docker.com (images are UNTESTED)."
-    imageName = buildDockerImage.tags.get().toArray()[1]
-}
-
-task pushDockerImages() {
-    description = "Collect all push images tasks."
-}
-
-pushDockerImages.dependsOn {
-    tasks.findAll { task -> task.name.startsWith('pushDockerImage_') }
+nativeBuild {
+    verbose = true
+    fallback = false
+    buildArgs.add("--libc=musl")
+    buildArgs.add("--static")
 }
 
 import java.text.SimpleDateFormat
@@ -106,7 +104,6 @@ def getTimestamp() {
     return date.format('yyyy-MM-dd HH:mm:ss')
 }
 
-// Create a static text file with same meta information as the docker labels
 task versionTxt()  {
     outputs.upToDateWhen { false }
     doLast {

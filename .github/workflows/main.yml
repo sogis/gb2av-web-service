@@ -5,30 +5,44 @@ on:
   push:
 
 jobs:
-  build:
+  build-native:
+    env:
+      DOCKER_ACCOUNT: sogis
+      DOCKER_REPO: gb2av
+      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}} 
+      BUILD_NUMBER: ${{ github.run_number }}
+      VERSION: 1.2.${{ github.run_number }}
+
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/cache@v1
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v3
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+
+      - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: 1.8
-      - name: Build with Gradle
-        run: ./gradlew clean build buildDockerImage
-      - name: ls
-        run: ls -la build/libs/
-        env:
-          BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
-      - name: Push docker image
-        run: ./gradlew pushDockerImages
-        if: ${{ github.ref == 'refs/heads/master' }}  
-        env:
-          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-      
+          version: '22.1.0'
+          java-version: '11'
+          components: 'native-image'
+          native-image-musl: 'true'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build native image
+        run: |
+          ./gradlew clean nativeCompile -i
+          ls -la build/native/nativeCompile/
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: reports
+          path: build/reports/tests/
