@@ -1,107 +1,57 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.1'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id 'org.springframework.experimental.aot' version '0.12.0'
+    id 'org.springframework.boot' version '3.1.2'
+    id 'io.spring.dependency-management' version '1.1.2'
+    id 'org.graalvm.buildtools.native' version '0.9.23'
 }
-
-apply from: "$rootDir/gradle/versioning.gradle"
 
 group = 'ch.so.agi'
 description = """ gb2av-web-service """
 
-sourceCompatibility = '11'
-targetCompatibility = '11'
+java {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}
 
 compileJava {
-    options.compilerArgs.addAll(['--release', '11'])
+    options.compilerArgs.addAll(['--release', '17'])
 }
 
 bootJar {
-   archiveName = baseName + "-" + version + "-exec.jar"
+   archiveFileName = archiveBaseName.get() + "-" + version + "-exec.jar"
 }
 
 ext {
-    apacheCamelVersion = "3.14.3"  // LTS
-}
-
-configurations {
-    developmentOnly
-    runtimeClasspath {
-        extendsFrom developmentOnly
-    }
-    /*
-    implementation {
-        exclude(group: 'com.fasterxml.jackson.core', module: 'jackson-databind')
-    }
-    */   
-}
-
-configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+    apacheCamelVersion = "4.0.0"  
 }
 
 repositories {
-    maven { url 'https://repo.spring.io/release' }
     mavenCentral()
-    maven { url "https://jars.interlis.ch" }	
+    maven { url "https://jars.interlis.ch" }
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation ('org.springframework.boot:spring-boot-starter-web') {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-        //exclude group: 'org.apache.tomcat.embed', module: 'tomcat-embed-core'
-        exclude group: 'org.apache.tomcat.embed', module: 'tomcat-embed-websocket'
-    }
-    implementation 'org.springframework.boot:spring-boot-starter-undertow'
-    //implementation 'org.apache.tomcat.experimental:tomcat-embed-programmatic'
-    
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'	
-    
-    implementation platform("org.apache.camel.springboot:camel-spring-boot-bom:${apacheCamelVersion}")
-    implementation "org.apache.camel.springboot:camel-spring-boot-starter"
-    //implementation "org.apache.camel.springboot:camel-stream-starter"
-    //implementation 'org.apache.camel.springboot:camel-servlet-starter'
-    //implementation 'org.apache.camel.springboot:camel-jackson-starter'
-    
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation "org.apache.camel.springboot:camel-spring-boot-starter:${apacheCamelVersion}"
+
     implementation "org.apache.camel:camel-ftp:${apacheCamelVersion}"	
     implementation "org.apache.camel:camel-zipfile:${apacheCamelVersion}"
     implementation "org.apache.camel:camel-aws2-s3:${apacheCamelVersion}"
     implementation "org.apache.camel:camel-sql:${apacheCamelVersion}"
-    implementation "ch.interlis:ili2pg:4.3.1"    
-    implementation "ch.interlis:ilivalidator:1.11.3"
-    implementation "ch.ehi:ehibasics:1.2.0"
-    implementation 'com.rometools:rome:1.18.0'    
-
-    //implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    //implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
-    //implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'   
-
-    runtimeOnly 'org.postgresql:postgresql'
+    implementation "ch.interlis:ili2pg:4.11.0"    
+    implementation "ch.interlis:ilivalidator:1.13.3"
+    implementation "ch.ehi:ehibasics:1.4.1"
+    implementation 'com.rometools:rome:1.18.0' // 2.1 available
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'    
-    testImplementation 'org.apache.camel:camel-test-spring-junit5'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-springAot {
-    //mode = org.springframework.aot.gradle.dsl.AotMode.NATIVE_AGENT
-    debugVerify = false
-    verify = true
-}
-
-nativeBuild {
-    verbose = true
-    fallback = false
-    buildArgs.add("--libc=musl")
-    buildArgs.add("--static")
 }
 
 import java.text.SimpleDateFormat
@@ -133,4 +83,3 @@ task copyVersionTxt(type: Copy) {
 copyVersionTxt.dependsOn(versionTxt)
 build.dependsOn(copyVersionTxt)
 classes.dependsOn(copyVersionTxt)
-

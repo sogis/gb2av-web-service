@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,12 +33,12 @@ public class MainController {
 
     private String awsBaseUrl = "https://s3.eu-central-1.amazonaws.com/";
 
-    @RequestMapping(value="/ping", method=RequestMethod.GET)
+    @GetMapping("/ping")
     public String ping() {
     	return "gb2av-web-service";
     }
     
-    @RequestMapping(value="/gb2av/rss.xml", method=RequestMethod.GET)
+    @GetMapping("/gb2av/rss.xml")
     public Channel rss() {
 
         Channel channel = new Channel();
