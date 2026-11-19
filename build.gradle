@@ -43,7 +43,12 @@ configurations.all {
 }
 
 repositories {
-    maven { url 'https://repo.spring.io/release' }
+    maven {
+        url 'https://repo.spring.io/milestone'
+        content {
+            includeGroup 'org.springframework.experimental'
+        }
+    }
     mavenCentral()
     maven { url "https://jars.interlis.ch" }	
 }
