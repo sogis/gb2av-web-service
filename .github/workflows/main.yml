@@ -3,6 +3,12 @@ name: CI/CD
 on:
   workflow_dispatch:
   push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
 
 jobs:
   # build-native:
@@ -92,17 +98,15 @@ jobs:
     env:
       DOCKER_ACCOUNT: sogis
       DOCKER_REPO: gb2av #-jvm
-      DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}} 
       BUILD_NUMBER: ${{ github.run_number }}
       VERSION: 1.2.${{ github.run_number }}
 
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -111,8 +115,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
         with:
           distribution: 'liberica' 
           java-version: '11'
@@ -122,46 +126,83 @@ jobs:
           ./gradlew clean build
           ls -la build/libs/
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
           name: reports
           path: build/reports/tests/
 
-      - name: Set up QEMU for amd64 and arm64
-        uses: docker/setup-qemu-action@v2
+      - name: Set up QEMU for ARM64
+        uses: docker/setup-qemu-action@v3
         with:
-          platforms: linux/amd64, linux/arm64
+          platforms: arm64
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and smoke-test AMD64 on PRs
+        if: github.event_name == 'pull_request'
+        run: |
+          docker buildx build --platform linux/amd64 --pull --load -f Dockerfile.jvm -t gb2av:pr .
+          docker run --rm --network none --user 1000830000:0 --read-only --tmpfs /tmp:rw,exec gb2av:pr sh -ec '
+            test "$(id -u)" = 1000830000
+            test "$(stat -c %a application.jar)" = 444
+            test -r application.jar
+            test ! -w application.jar
+            for dir in /tmp/gb2av/download /tmp/gb2av/unzipped /tmp/gb2av/error "$ILI_CACHE"; do
+              mkdir -p "$dir"
+              touch "$dir/check"
+            done
+            java -XX:-UseBASE64Intrinsics -XX:+PrintFlagsFinal -version > /tmp/java-flags 2>&1
+            grep -E "openjdk version \"17\." /tmp/java-flags
+            grep -E "UseBASE64Intrinsics +[=:]+ false.*command line" /tmp/java-flags
+          '
+          container=$(docker run -d --network none --user 1000830000:0 --read-only --tmpfs /tmp:rw,exec \
+            -e SPRING_PROFILES_ACTIVE=smoke -e CAMEL_SPRINGBOOT_AUTOSTARTUP=false \
+            -e CAMEL_SPRINGBOOT_ROUTESCOLLECTORENABLED=false -e MANAGEMENT_HEALTH_DB_ENABLED=false \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://127.0.0.1:1/smoke \
+            -e SPRING_DATASOURCE_USERNAME=smoke -e SPRING_DATASOURCE_PASSWORD=smoke \
+            -e ftpUserInfogrips=smoke -e ftpPwdInfogrips=smoke -e APP_FTPURLINFOGRIPS=127.0.0.1 \
+            -e APP_AWSBUCKETNAME=smoke gb2av:pr)
+          trap 'docker logs "$container"; docker rm -f "$container"' EXIT
+          for _ in {1..30}; do
+            if docker exec "$container" bash -ec '
+              exec 3<>/dev/tcp/127.0.0.1/8080
+              printf "GET /ping HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3
+              cat <&3
+            ' 2>/dev/null | grep -Fxq gb2av-web-service; then
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.DOCKER_ACCOUNT }}/${{ env.DOCKER_REPO }}
           labels: |
             org.opencontainers.image.title=${{ env.DOCKER_REPO }}
             org.opencontainers.image.version=${{ env.VERSION }}
-            org.opencontainers.image.base.name=docker.io/bellsoft/liberica-openjdk-alpine-musl:17.0.3
+            org.opencontainers.image.base.name=registry.access.redhat.com/ubi9/openjdk-17-runtime:1.24
           tags: |
             type=raw,value=${{ env.VERSION }},enable=true,priority=200
             type=raw,value=1.2,enable=true,priority=200
             type=raw,value=1,enable=true,priority=200
             type=raw,value=latest,enable=true,priority=200
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
         if: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
 
-      - name: Multi-platform build and push
-        uses: docker/build-push-action@v2
+      - name: Build ARM64 on PRs or publish both platforms on master
+        uses: docker/build-push-action@v6
         with:
-          platforms:  linux/amd64, linux/arm64
+          platforms: ${{ github.event_name == 'pull_request' && 'linux/arm64' || 'linux/amd64,linux/arm64' }}
           context: .
           file: Dockerfile.jvm
           tags: ${{ steps.meta.outputs.tags }}
