@@ -165,17 +165,9 @@ jobs:
             -e ftpUserInfogrips=smoke -e ftpPwdInfogrips=smoke -e APP_FTPURLINFOGRIPS=127.0.0.1 \
             -e APP_AWSBUCKETNAME=smoke gb2av:pr)
           trap 'docker logs "$container"; docker rm -f "$container"' EXIT
-          for _ in {1..30}; do
-            if docker exec "$container" bash -ec '
-              exec 3<>/dev/tcp/127.0.0.1/8080
-              printf "GET /ping HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3
-              cat <&3
-            ' 2>/dev/null | grep -Fxq gb2av-web-service; then
-              exit 0
-            fi
-            sleep 2
-          done
-          exit 1
+          docker exec "$container" curl -fsS --retry 30 --retry-connrefused --retry-delay 2 \
+            http://127.0.0.1:8080/ping | grep -Fx gb2av-web-service
+          docker exec "$container" sh -ec 'tr "\000" "\n" < /proc/1/cmdline | grep -Fx -- "-XX:-UseBASE64Intrinsics"'
 
       - name: Docker meta
         id: meta
@@ -208,4 +200,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           pull: true
+          provenance: mode=min
           push: ${{ (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request') && !env.ACT }}
